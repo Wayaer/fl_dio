@@ -29,37 +29,27 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Map<String, dynamic> res = {};
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 30),
-        Wrap(
-            runSpacing: 12,
-            spacing: 12,
-            alignment: WrapAlignment.center,
-            children: [
-              ElevatedText('show', onPressed: DebuggerInterceptorHelper().show),
-              ElevatedText('showDebugger',
-                  onPressed: DebuggerInterceptorHelper().showDebugger),
-              ElevatedText('hide', onPressed: DebuggerInterceptorHelper().hide),
-              ElevatedText('get', onPressed: get),
-              ElevatedText('post', onPressed: post),
-              ElevatedText('put', onPressed: put),
-              ElevatedText('delete', onPressed: delete),
-              ElevatedText('patch', onPressed: patch),
-              ElevatedText('download', onPressed: download),
-              ElevatedText('upload', onPressed: upload),
-            ]),
-        JsonParse(res)
-      ],
+    return Container(
+      alignment: Alignment.center,
+      child: Wrap(
+          runSpacing: 12,
+          spacing: 12,
+          alignment: WrapAlignment.center,
+          children: [
+            ElevatedText('show', onPressed: DebuggerInterceptorHelper().show),
+            ElevatedText('showDebugger',
+                onPressed: DebuggerInterceptorHelper().showDebugger),
+            ElevatedText('hide', onPressed: DebuggerInterceptorHelper().hide),
+            ElevatedText('get', onPressed: get),
+            ElevatedText('post', onPressed: post),
+            ElevatedText('put', onPressed: put),
+            ElevatedText('delete', onPressed: delete),
+            ElevatedText('patch', onPressed: patch),
+            ElevatedText('download', onPressed: download),
+            ElevatedText('upload', onPressed: upload),
+          ]),
     );
   }
 

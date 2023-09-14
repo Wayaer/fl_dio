@@ -234,62 +234,65 @@ class _Entry extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final statusCode =
         model.response?.statusCode ?? model.error?.response?.statusCode;
-    return Card(
-      child: Universal(
-          onLongPress: () {
-            Clipboard.setData(ClipboardData(text: model.toMap().toString()));
-          },
-          onTap: () => showDetailData(),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4), color: theme.cardColor),
-          children: [
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              Text(model.requestOptions?.method ?? 'unknown',
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold)),
-              Universal(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-                  decoration: BoxDecoration(
-                      color: statusCodeColor(statusCode ?? 0),
-                      borderRadius: BorderRadius.circular(4)),
-                  child: Text(
-                    statusCode?.toString() ?? 'N/A',
-                    style: const TextStyle(color: Colors.white),
-                  ))
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Card(
+        child: Universal(
+            onLongPress: () {
+              Clipboard.setData(ClipboardData(text: model.toMap().toString()));
+            },
+            onTap: () => showDetailData(),
+            padding: const EdgeInsets.all(12),
+            children: [
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Text(model.requestOptions?.method ?? 'unknown',
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold)),
+                Universal(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                    decoration: BoxDecoration(
+                        color: statusCodeColor(statusCode ?? 0),
+                        borderRadius: BorderRadius.circular(4)),
+                    child: Text(
+                      statusCode?.toString() ?? 'N/A',
+                      style: const TextStyle(color: Colors.white),
+                    ))
+              ]),
+              const SizedBox(height: 10),
+              Row(children: [
+                Universal(
+                    visible: model.requestOptions?.baseUrl.contains('https') ??
+                        false,
+                    replacement: const Icon(Icons.lock_open,
+                        size: 18, color: Colors.grey),
+                    child:
+                        const Icon(Icons.lock, size: 18, color: Colors.green)),
+                Expanded(child: Text(model.requestOptions?.baseUrl ?? 'N/A'))
+              ]),
+              const SizedBox(height: 10),
+              SizedBox(
+                  width: double.infinity,
+                  child: Text(model.requestOptions?.path ?? 'unknown',
+                      textAlign: TextAlign.start)),
+              const SizedBox(height: 10),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Expanded(
+                    flex: 3,
+                    child: Text(model.requestTime?.toString() ?? 'unknown')),
+                Expanded(
+                    child: Text(
+                        stringToBytes(model.response?.data?.toString() ?? ''),
+                        textAlign: TextAlign.center)),
+                Expanded(
+                    child: Text(
+                        '${diffMillisecond(model.requestTime, model.responseTime)} ms',
+                        textAlign: TextAlign.end)),
+              ]),
             ]),
-            const SizedBox(height: 10),
-            Row(children: [
-              Universal(
-                  visible:
-                      model.requestOptions?.baseUrl.contains('https') ?? false,
-                  replacement:
-                      const Icon(Icons.lock_open, size: 18, color: Colors.grey),
-                  child: const Icon(Icons.lock, size: 18, color: Colors.green)),
-              Expanded(child: Text(model.requestOptions?.baseUrl ?? 'N/A'))
-            ]),
-            const SizedBox(height: 10),
-            SizedBox(
-                width: double.infinity,
-                child: Text(model.requestOptions?.path ?? 'unknown',
-                    textAlign: TextAlign.start)),
-            const SizedBox(height: 10),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              Expanded(child: Text(model.requestTime?.toString() ?? 'unknown')),
-              Expanded(
-                  child: Text(
-                      stringToBytes(model.response?.data?.toString() ?? ''),
-                      textAlign: TextAlign.center)),
-              Expanded(
-                  child: Text(
-                      '${diffMillisecond(model.requestTime, model.responseTime)} ms',
-                      textAlign: TextAlign.end)),
-            ]),
-          ]),
+      ),
     );
   }
 
