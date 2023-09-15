@@ -1,7 +1,7 @@
 # [fl_dio](https://pub.dev/packages/fl_dio)
 
 ## Extended dio and added three interceptors and the JsonParse component.
-### [Example web]()
+### [Example web](https://wayaer.github.io/fl_dio/example/app/web/index.html#/)
 
 ```dart
 void main() {
