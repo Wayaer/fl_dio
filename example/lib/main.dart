@@ -21,7 +21,7 @@ void main() {
     /// debug 调试工具
     DebuggerInterceptor(),
 
-    /// cooker 管理
+    /// cookie 保存和获取
     CookiesInterceptor()
   ]);
   runApp(MaterialApp(

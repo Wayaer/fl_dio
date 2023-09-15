@@ -1,39 +1,46 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# [fl_dio](https://pub.dev/packages/fl_dio)
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
-
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+## Extended dio and added three interceptors and the JsonParse component.
 
 ```dart
-const like = 'sample';
+void main() {
+
+  /// 必须设置 DebuggerInterceptorHelper
+  /// You must set up DebuggerInterceptorHelper
+  DebuggerInterceptorHelper().navigatorKey = navigatorKey;
+
+  /// 设置JsonParse字体颜色
+  /// Set the JsonParse font color
+  JsonParse.color = JsonParseColor();
+
+  /// ExtendedDio 添加全局拦截
+  /// Add an interceptor for ExtendedDio
+  /// 
+  ExtendedDio().initialize(interceptors: [
+
+    /// 日志打印
+    LoggerInterceptor(),
+
+    /// debug 调试工具
+    DebuggerInterceptor(),
+
+    /// cookie 保存和获取
+    CookiesInterceptor()
+  ]);
+
+  ///  你也可以使用自己的dio，并添加拦截器，拦截器是独立存在的
+  ///  You can also use your own dio and add interceptors, which stand alone
+  List<Interceptor>list = [
+
+    /// 日志打印
+    LoggerInterceptor(),
+
+    /// debug 调试工具
+    DebuggerInterceptor(),
+
+    /// cookie 保存和获取
+    CookiesInterceptor(),
+  ];
+}
+
 ```
-
-## Additional information
-
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
