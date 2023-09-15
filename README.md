@@ -42,6 +42,13 @@ void main() {
     /// cookie 保存和获取
     CookiesInterceptor(),
   ];
+  runApp(MaterialApp(
+    navigatorKey: navigatorKey,
+    debugShowCheckedModeBanner: false,
+    theme: ThemeData.light(useMaterial3: true),
+    darkTheme: ThemeData.dark(useMaterial3: true),
+    home: const Scaffold(body: HomePage()),
+  ));
 }
 
 ```
