@@ -5,6 +5,7 @@
 
 ```dart
 void main() {
+  GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   /// 必须设置 DebuggerInterceptorHelper
   /// You must set up DebuggerInterceptorHelper

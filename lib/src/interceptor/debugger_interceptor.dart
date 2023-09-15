@@ -89,7 +89,7 @@ class DebuggerInterceptorHelper {
 
   static DebuggerInterceptorHelper? _singleton;
 
-  GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  GlobalKey<NavigatorState>? navigatorKey;
 
   OverlayEntry? _overlayEntry;
 
@@ -107,16 +107,17 @@ class DebuggerInterceptorHelper {
   }
 
   Future<void> showDebugger() async {
-    if (navigatorKey.currentContext != null) {
+    if (navigatorKey != null && navigatorKey!.currentContext != null) {
       await showCupertinoModalPopup(
-          context: navigatorKey.currentContext!,
+          context: navigatorKey!.currentContext!,
           builder: (_) => const _DebuggerList());
     }
   }
 
   /// 自定义Overlay
   OverlayEntry? _showOverlay(Widget widget) {
-    final OverlayState? overlay = navigatorKey.currentState!.overlay;
+    if (navigatorKey == null) return null;
+    final OverlayState? overlay = navigatorKey!.currentState!.overlay;
     if (overlay == null) return null;
     final entry = OverlayEntry(builder: (_) => widget);
     overlay.insert(entry);
@@ -160,7 +161,7 @@ class _DebuggerList extends StatelessWidget {
     final key = map.keys.elementAt(index);
     return _Entry(model, onTap: () {
       final navigatorKey = DebuggerInterceptorHelper().navigatorKey;
-      if (navigatorKey.currentContext != null) {
+      if (navigatorKey != null && navigatorKey.currentContext != null) {
         showCupertinoModalPopup(
             barrierColor: Colors.transparent,
             context: navigatorKey.currentContext!,
