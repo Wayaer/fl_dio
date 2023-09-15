@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:fl_dio/fl_dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
@@ -6,11 +9,20 @@ GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
+  /// 必须设置 DebuggerInterceptorHelper
   DebuggerInterceptorHelper().navigatorKey = navigatorKey;
+
+  /// 设置JsonParse字体颜色
+  JsonParse.color = JsonParseColor();
   ExtendedDio().initialize(interceptors: [
-    DebuggerInterceptor(),
+    /// 日志打印
     LoggerInterceptor(),
-    CookiesInterceptor(),
+
+    /// debug 调试工具
+    DebuggerInterceptor(),
+
+    /// cooker 管理
+    CookiesInterceptor()
   ]);
   runApp(MaterialApp(
     navigatorKey: navigatorKey,
@@ -49,6 +61,10 @@ class _HomePageState extends State<HomePage> {
             ElevatedText('patch', onPressed: patch),
             ElevatedText('download', onPressed: download),
             ElevatedText('upload', onPressed: upload),
+            ElevatedText('JsonParse', onPressed: () {
+              showCupertinoModalPopup(
+                  context: context, builder: (_) => const JsonParsePage());
+            }),
           ]),
     );
   }
@@ -89,4 +105,36 @@ class _HomePageState extends State<HomePage> {
 class ElevatedText extends ElevatedButton {
   ElevatedText(String text, {required super.onPressed, super.key})
       : super(child: Text(text));
+}
+
+class JsonParsePage extends StatelessWidget {
+  const JsonParsePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final Map<dynamic, dynamic> map =
+        jsonDecode('{"name":"BeJson","url":"http://www.bejson.com",'
+                '"page":88,"num":88.88,"isNonProfit":true,"address":'
+                '{"street":"科技园路.","city":"江苏苏州","country":"中国"},'
+                '"links":[{"name":"Google","url":"http://www.google.com"},'
+                '{"name":"Baidu","url":"http://www.baidu.com"},'
+                '{"name":"SoSo","url":"http://www.SoSo.com"}]}')
+            as Map<dynamic, dynamic>;
+    final List<dynamic> list = jsonDecode(
+            '[{"name":"Google","url":"http://www.google.com"},{"name":"Baidu",'
+            '"url":"http://www.baidu.com"},{"name":"SoSo","url":"http://www.SoSo.com"}]')
+        as List<dynamic>;
+    return Scaffold(
+        appBar: AppBar(title: const Text('JsonParse')),
+        body: SingleChildScrollView(
+            child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(children: [
+            const Text('JsonParse'),
+            Card(child: JsonParse(map)),
+            const Text('JsonParse.list'),
+            Card(child: JsonParse.list(list))
+          ]),
+        )));
+  }
 }
