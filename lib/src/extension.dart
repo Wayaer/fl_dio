@@ -117,7 +117,7 @@ extension ExtensionUriData on UriData {
 }
 
 /// int 扩展
-extension ExtensionInt on int {
+extension ExtensionIntToStorageUnit on int {
   /// b KB MB GB TB PB
   String toStorageUnit([int round = 2]) {
     int divider = 1024;

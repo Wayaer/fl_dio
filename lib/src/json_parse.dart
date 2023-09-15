@@ -1,6 +1,33 @@
-import 'package:fl_dio/src/universal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+class JsonParseColor {
+  JsonParseColor({
+    this.typeMap = Colors.grey,
+    this.typeList = Colors.grey,
+    this.typeNull = Colors.grey,
+    this.typeNum = Colors.teal,
+    this.typeString = Colors.redAccent,
+    this.typeBool = Colors.blue,
+    this.typeObject = Colors.grey,
+    this.arrow,
+    this.key = Colors.purpleAccent,
+    this.keyContentNull = Colors.grey,
+  });
+
+  final Color typeMap;
+  final Color typeList;
+  final Color typeNull;
+  final Color typeNum;
+  final Color typeString;
+  final Color typeBool;
+  final Color typeObject;
+  final Color? arrow;
+  final Color key;
+  final Color keyContentNull;
+}
+
+typedef JsonParseTextBuilder = Widget Function(Color color, String content);
 
 class JsonParse extends StatefulWidget {
   JsonParse(this.json, {super.key})
@@ -10,6 +37,12 @@ class JsonParse extends StatefulWidget {
   JsonParse.list(this.list, {super.key})
       : json = list.asMap(),
         isList = true;
+
+  /// text color
+  static JsonParseColor color = JsonParseColor();
+
+  /// text builder
+  static JsonParseTextBuilder? textBuilder;
 
   final Map<dynamic, dynamic> json;
   final List<dynamic> list;
@@ -23,11 +56,9 @@ class _JsonParseState extends State<JsonParse> {
   Map<String, bool> mapFlag = <String, bool>{};
 
   @override
-  Widget build(BuildContext context) => Universal(
-      isScroll: true,
-      margin: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: children);
+  Widget build(BuildContext context) => SingleChildScrollView(
+      child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start, children: children));
 
   List<Widget> get children {
     final List<Widget> list = [];
@@ -38,8 +69,9 @@ class _JsonParseState extends State<JsonParse> {
       if (isTap(content)) {
         row.add(Icon(
             (mapFlag[key.toString()]) ?? false
-                ? Icons.arrow_right_rounded
-                : Icons.arrow_drop_down_outlined,
+                ? Icons.arrow_drop_down_outlined
+                : Icons.arrow_right_rounded,
+            color: JsonParse.color.arrow,
             size: 22));
       } else {
         row.add(const SizedBox(width: 18));
@@ -49,24 +81,23 @@ class _JsonParseState extends State<JsonParse> {
             onDoubleTap: () {
               Clipboard.setData(ClipboardData(text: key.toString()));
             },
-            child: Text(widget.isList || isTap(content) ? '[$key]:' : ' $key :',
-                style: TextStyle(
-                    fontWeight: FontWeight.w400,
-                    color: content == null ? Colors.grey : Colors.purple))),
+            child: buildItem(content == null ? Colors.grey : Colors.purple,
+                widget.isList || isTap(content) ? '[$key]:' : ' $key :')),
         const SizedBox(width: 4),
         getValueWidget(content)
       ]);
-      list.add(Universal(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-          direction: Axis.horizontal,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          onTap: !isTap(content)
-              ? null
-              : () {
-                  mapFlag[key.toString()] = !(mapFlag[key.toString()] ?? false);
-                  setState(() {});
-                },
-          children: row));
+      list.add(GestureDetector(
+        onTap: !isTap(content)
+            ? null
+            : () {
+                mapFlag[key.toString()] = !(mapFlag[key.toString()] ?? false);
+                setState(() {});
+              },
+        child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+            child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start, children: row)),
+      ));
       list.add(const SizedBox(height: 4));
       if ((mapFlag[key.toString()]) ?? false) {
         list.add(getContentWidget(content));
@@ -75,11 +106,17 @@ class _JsonParseState extends State<JsonParse> {
     return list;
   }
 
-  Widget getContentWidget(dynamic content) => content is List
-      ? JsonParse.list(content)
-      : content is Map<String, dynamic>
-          ? JsonParse(content)
-          : JsonParse({content.runtimeType: content.toString()});
+  Widget buildItem(Color color, String text) =>
+      JsonParse.textBuilder?.call(color, text) ??
+      Text(text, style: TextStyle(fontWeight: FontWeight.w400, color: color));
+
+  Widget getContentWidget(dynamic content) => Padding(
+      padding: const EdgeInsets.only(left: 10),
+      child: content is List
+          ? JsonParse.list(content)
+          : content is Map<dynamic, dynamic>
+              ? JsonParse(content)
+              : JsonParse({content.runtimeType: content.toString()}));
 
   Widget getValueWidget(dynamic content) {
     String text = '';
@@ -87,42 +124,43 @@ class _JsonParseState extends State<JsonParse> {
     bool isToClipboard = false;
     if (content == null) {
       text = 'null';
-      color = Colors.grey;
+      color = JsonParse.color.typeNull;
     } else if (content is num) {
       text = content.toString();
-      color = Colors.teal;
+      color = JsonParse.color.typeNum;
       isToClipboard = true;
     } else if (content is String) {
       text = content;
-      color = Colors.redAccent;
+      color = JsonParse.color.typeString;
       isToClipboard = true;
     } else if (content is bool) {
       text = content.toString();
-      color = Colors.blue;
+      color = JsonParse.color.typeBool;
       isToClipboard = true;
     } else if (content is List) {
       text = content.isEmpty
           ? '[0]'
           : '<${content.runtimeType.toString()}>[${content.length}]';
-      color = Colors.grey;
+      color = JsonParse.color.typeList;
     } else if (content is Map) {
-      text = 'Map';
-      color = Colors.grey;
+      text = 'Map [${content.length}]';
+      color = JsonParse.color.typeMap;
       isToClipboard = true;
     } else {
       text = 'Object';
-      color = Colors.grey;
+      color = JsonParse.color.typeObject;
     }
-    return Universal(
-        expanded: true,
-        onTap: isToClipboard
-            ? () {
-                Clipboard.setData(ClipboardData(text: content.toString()));
-              }
-            : null,
-        child: Text(text,
-            style: TextStyle(color: color, fontWeight: FontWeight.w400),
-            textAlign: TextAlign.left));
+    return Expanded(
+        child: GestureDetector(
+            onTap: isToClipboard
+                ? () {
+                    Clipboard.setData(ClipboardData(text: content.toString()));
+                  }
+                : null,
+            child: JsonParse.textBuilder?.call(color, text) ??
+                Text(text,
+                    style: TextStyle(color: color, fontWeight: FontWeight.w400),
+                    textAlign: TextAlign.left)));
   }
 
   bool isTap(dynamic content) => !(content == null ||

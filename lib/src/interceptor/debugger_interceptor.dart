@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:fl_dio/fl_dio.dart';
-import 'package:fl_dio/src/universal.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -131,28 +130,43 @@ class _DebuggerList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Universal(
-        width: double.infinity,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 60),
-        decoration: BoxDecoration(
-            color: theme.cardColor,
-            borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(10))),
-        children: [
-          const Padding(
-              padding: EdgeInsets.only(right: 10), child: CloseButton()),
-          Expanded(
-              child: ValueListenableBuilder(
-                  valueListenable: DebuggerInterceptorHelper()._debugData,
-                  builder: (_, Map<int, DebuggerInterceptorDataModel> map, __) {
-                    final values = map.values.toList().reversed;
-                    return ListView.builder(
-                        itemCount: values.length,
-                        itemBuilder: (_, int index) =>
-                            _Entry(values.elementAt(index), canTap: true));
-                  }))
-        ]);
+    return Padding(
+        padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 30),
+        child: Material(
+            color: theme.scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child:
+                  Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                _Toolbar(onDelete: () {
+                  DebuggerInterceptorHelper()._debugData.value = {};
+                }),
+                Expanded(
+                    child: ValueListenableBuilder<
+                            Map<int, DebuggerInterceptorDataModel>>(
+                        valueListenable: DebuggerInterceptorHelper()._debugData,
+                        builder: (_, map, __) => ListView.builder(
+                            padding: EdgeInsets.zero,
+                            itemCount: map.length,
+                            itemBuilder: (_, int index) =>
+                                itemBuilder(map, index))))
+              ]),
+            )));
+  }
+
+  Widget itemBuilder(Map<int, DebuggerInterceptorDataModel> map, int index) {
+    final model = map.values.elementAt(index);
+    final key = map.keys.elementAt(index);
+    return _Entry(model, onTap: () {
+      final navigatorKey = DebuggerInterceptorHelper().navigatorKey;
+      if (navigatorKey.currentContext != null) {
+        showCupertinoModalPopup(
+            barrierColor: Colors.transparent,
+            context: navigatorKey.currentContext!,
+            builder: (_) => _DebuggerDetail(key, model));
+      }
+    });
   }
 }
 
@@ -168,14 +182,14 @@ class _DebuggerIcon extends StatefulWidget {
 
 class _DebuggerIconState extends State<_DebuggerIcon> {
   bool hasWindows = false;
-  ValueNotifier<Offset> iconOffSet =
-      ValueNotifier<Offset>(const Offset(10, 10));
+  Offset offSet = const Offset(10, 10);
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      iconOffSet.value = Offset(50, MediaQuery.of(context).padding.top + 20);
+      offSet = Offset(30, MediaQuery.of(context).padding.top + 20);
+      setState(() {});
     });
   }
 
@@ -183,28 +197,28 @@ class _DebuggerIconState extends State<_DebuggerIcon> {
   Widget build(BuildContext context) {
     final color = Theme.of(context).primaryColor;
     return Stack(children: [
-      ValueListenableBuilder<Offset>(
-          valueListenable: iconOffSet,
-          builder: (_, Offset value, __) => Universal(
-              left: value.dx,
-              top: value.dy,
-              enabled: true,
-              onTap: show,
-              onDoubleTap: widget.hide,
-              onPanStart: (DragStartDetails details) =>
-                  update(details.globalPosition),
-              onPanUpdate: (DragUpdateDetails details) =>
-                  update(details.globalPosition),
-              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-              padding: const EdgeInsets.all(6),
-              child: const Icon(Icons.bug_report_rounded,
-                  size: 23, color: Colors.white)))
+      Positioned(
+          left: offSet.dx,
+          top: offSet.dy,
+          child: GestureDetector(
+            onTap: show,
+            onDoubleTap: widget.hide,
+            onPanStart: (DragStartDetails details) =>
+                update(details.globalPosition),
+            onPanUpdate: (DragUpdateDetails details) =>
+                update(details.globalPosition),
+            child: Container(
+                decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+                padding: const EdgeInsets.all(6),
+                child: const Icon(Icons.bug_report_rounded,
+                    size: 23, color: Colors.white)),
+          ))
     ]);
   }
 
   Future<void> show() async {
     if (hasWindows) {
-      Navigator.of(context).pop();
+      Navigator.of(context).maybePop();
     } else {
       hasWindows = true;
       await widget.show();
@@ -220,80 +234,94 @@ class _DebuggerIconState extends State<_DebuggerIcon> {
         offset.dy < mediaQuery.size.height - mediaQuery.padding.bottom - 24) {
       double dy = offset.dy;
       double dx = offset.dx;
-      iconOffSet.value = Offset(dx -= 12, dy -= 26);
+      offSet = Offset(dx -= 12, dy -= 26);
+      setState(() {});
     }
   }
 }
 
 class _Entry extends StatelessWidget {
-  const _Entry(this.model, {this.canTap = false});
+  const _Entry(this.model, {this.onTap});
 
   final DebuggerInterceptorDataModel model;
 
-  final bool canTap;
+  final GestureTapCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final statusCode =
         model.response?.statusCode ?? model.error?.response?.statusCode;
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: Card(
-        child: Universal(
-            onLongPress: () {
-              Clipboard.setData(ClipboardData(text: model.toMap().toString()));
-            },
-            onTap: () => showDetailData(),
-            padding: const EdgeInsets.all(12),
-            children: [
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text(model.requestOptions?.method ?? 'unknown',
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold)),
-                Universal(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-                    decoration: BoxDecoration(
-                        color: statusCodeColor(statusCode ?? 0),
-                        borderRadius: BorderRadius.circular(4)),
-                    child: Text(
-                      statusCode?.toString() ?? 'N/A',
-                      style: const TextStyle(color: Colors.white),
-                    ))
-              ]),
-              const SizedBox(height: 10),
-              Row(children: [
-                Universal(
-                    visible: model.requestOptions?.baseUrl.contains('https') ??
-                        false,
-                    replacement: const Icon(Icons.lock_open,
-                        size: 18, color: Colors.grey),
-                    child:
-                        const Icon(Icons.lock, size: 18, color: Colors.green)),
-                Expanded(child: Text(model.requestOptions?.baseUrl ?? 'N/A'))
-              ]),
-              const SizedBox(height: 10),
-              SizedBox(
-                  width: double.infinity,
-                  child: Text(model.requestOptions?.path ?? 'unknown',
-                      textAlign: TextAlign.start)),
-              const SizedBox(height: 10),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Expanded(
-                    flex: 3,
-                    child: Text(model.requestTime?.toString() ?? 'unknown')),
-                Expanded(
-                    child: Text(
-                        stringToBytes(model.response?.data?.toString() ?? ''),
-                        textAlign: TextAlign.center)),
-                Expanded(
-                    child: Text(
-                        '${diffMillisecond(model.requestTime, model.responseTime)} ms',
-                        textAlign: TextAlign.end)),
-              ]),
-            ]),
-      ),
-    );
+    return Card(
+        child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: GestureDetector(
+                onLongPress: () {
+                  Clipboard.setData(
+                      ClipboardData(text: model.toMap().toString()));
+                },
+                onTap: onTap,
+                child: Column(children: [
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(model.requestOptions?.method ?? 'unknown',
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold)),
+                        Container(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 4, horizontal: 10),
+                            decoration: BoxDecoration(
+                                color: statusCodeColor(statusCode ?? 0),
+                                borderRadius: BorderRadius.circular(4)),
+                            child: Text(statusCode?.toString() ?? 'N/A',
+                                style: const TextStyle(color: Colors.white)))
+                      ]),
+                  const SizedBox(height: 4),
+                  Row(children: [
+                    Visibility(
+                        visible:
+                            model.requestOptions?.baseUrl.contains('https') ??
+                                false,
+                        replacement: const Icon(Icons.lock,
+                            size: 18, color: Colors.green),
+                        child: const Icon(Icons.lock_open,
+                            size: 18, color: Colors.green)),
+                    Expanded(
+                        child: Text(model.requestOptions?.baseUrl ?? 'N/A'))
+                  ]),
+                  const SizedBox(height: 4),
+                  SizedBox(
+                      width: double.infinity,
+                      child: Text(model.requestOptions?.path ?? 'unknown',
+                          textAlign: TextAlign.left)),
+                  const SizedBox(height: 4),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                            flex: 3,
+                            child: Text(requestTime(model.requestTime))),
+                        Expanded(
+                            flex: 2,
+                            child: Text(
+                                stringToBytes(
+                                    model.response?.data?.toString() ?? ''),
+                                textAlign: TextAlign.center)),
+                        Expanded(
+                            child: Text(
+                                '${diffMillisecond(model.requestTime, model.responseTime)} ms',
+                                textAlign: TextAlign.end)),
+                      ]),
+                ]))));
+  }
+
+  String requestTime(DateTime? requestTime) {
+    if (requestTime == null) return 'unknown';
+    var str = requestTime.toString();
+    if (str.contains('.')) {
+      str = str.substring(0, str.indexOf('.'));
+    }
+    return str;
   }
 
   String stringToBytes(String data) {
@@ -305,16 +333,6 @@ class _Entry extends StatelessWidget {
   String diffMillisecond(DateTime? requestTime, DateTime? responseTime) {
     if (requestTime == null || responseTime == null) return '';
     return responseTime.difference(requestTime).inMilliseconds.toString();
-  }
-
-  void showDetailData() {
-    if (!canTap) return;
-    final navigatorKey = DebuggerInterceptorHelper().navigatorKey;
-    if (navigatorKey.currentContext != null) {
-      showCupertinoModalPopup(
-          context: navigatorKey.currentContext!,
-          builder: (_) => const _DebuggerList());
-    }
   }
 
   Color statusCodeColor(int statusCode) {
@@ -334,76 +352,76 @@ class _Entry extends StatelessWidget {
   }
 }
 
-class _DebuggerDetail extends StatefulWidget {
-  const _DebuggerDetail(this.model);
+class _DebuggerDetail extends StatelessWidget {
+  const _DebuggerDetail(this.iKey, this.model);
 
   final DebuggerInterceptorDataModel model;
-
-  @override
-  State<_DebuggerDetail> createState() => _DebuggerDetailState();
-}
-
-class _DebuggerDetailState extends State<_DebuggerDetail>
-    with SingleTickerProviderStateMixin {
-  late TabController controller;
-  List<String> tabs = ['request', 'response', 'error'];
-
-  @override
-  void initState() {
-    super.initState();
-    controller = TabController(length: tabs.length, vsync: this);
-  }
+  final int iKey;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mediaQuery = MediaQuery.of(context);
-    return Universal(
-        width: double.infinity,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        margin: EdgeInsets.only(top: mediaQuery.padding.top + 80),
-        decoration: BoxDecoration(
-            color: theme.cardColor,
-            borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(10))),
-        children: [
-          const Padding(
-              padding: EdgeInsets.only(right: 10), child: CloseButton()),
-          _Entry(widget.model),
-          Expanded(
-              child: Column(children: [
-            TabBar(
-                labelColor: theme.indicatorColor,
-                labelStyle: TextStyle(
-                    color: theme.indicatorColor, fontWeight: FontWeight.bold),
-                indicatorSize: TabBarIndicatorSize.label,
-                controller: controller,
-                tabs: tabs.map((item) => Tab(child: Text(item))).toList()),
-            Expanded(
-                child: TabBarView(
-                    controller: controller,
-                    children: tabs.map((item) {
+    List<String> tabs = ['request', 'response', 'error'];
+    return DefaultTabController(
+        length: tabs.length,
+        child: Padding(
+          padding: EdgeInsets.only(
+              top: mediaQuery.padding.top + 30, left: 8, right: 8, bottom: 8),
+          child: Material(
+              color: theme.scaffoldBackgroundColor,
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(10)),
+              child:
+                  Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                _Toolbar(onDelete: () {
+                  Navigator.of(context).maybePop();
+                  final map =
+                      Map.of(DebuggerInterceptorHelper()._debugData.value);
+                  map.remove(iKey);
+                  DebuggerInterceptorHelper()._debugData.value = map;
+                }),
+                _Entry(model),
+                Expanded(
+                    child: Column(children: [
+                  SizedBox(
+                      height: 40,
+                      child: TabBar(
+                          indicatorSize: TabBarIndicatorSize.label,
+                          tabs: tabs.map((item) => Tab(text: item)).toList())),
+                  Expanded(
+                      child: Padding(
+                    padding: EdgeInsets.only(
+                        bottom: mediaQuery.padding.bottom, top: 10),
+                    child: TabBarView(
+                        children: tabs.map((item) {
                       Widget entry = const SizedBox();
                       if (item == tabs.first) {
-                        entry = JsonParse(widget.model.requestOptionsToMap());
+                        entry = JsonParse(model.requestOptionsToMap());
                       } else if (item == tabs[1]) {
-                        entry = JsonParse(widget.model.responseToMap());
+                        entry = JsonParse(model.responseToMap());
                       } else if (item == tabs.last) {
-                        entry = JsonParse(widget.model.errorToMap());
+                        entry = JsonParse(model.errorToMap());
                       }
-                      return Universal(
-                          isScroll: true,
-                          safeBottom: true,
-                          padding: const EdgeInsets.symmetric(vertical: 15),
-                          child: entry);
-                    }).toList()))
-          ])),
-        ]);
+                      return Card(child: entry);
+                    }).toList()),
+                  ))
+                ])),
+              ])),
+        ));
   }
+}
+
+class _Toolbar extends StatelessWidget {
+  const _Toolbar({this.onDelete});
+
+  final VoidCallback? onDelete;
 
   @override
-  void dispose() {
-    super.dispose();
-    controller.dispose();
+  Widget build(BuildContext context) {
+    return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+      IconButton(onPressed: onDelete, icon: const Icon(Icons.delete, size: 19)),
+      const CloseButton(),
+    ]);
   }
 }
