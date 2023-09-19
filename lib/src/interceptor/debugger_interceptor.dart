@@ -157,15 +157,15 @@ class _DebuggerList extends StatelessWidget {
   }
 
   Widget itemBuilder(Map<int, DebuggerInterceptorDataModel> map, int index) {
-    final model = map.values.elementAt(index);
-    final key = map.keys.elementAt(index);
-    return _Entry(model, onTap: () {
+    final value = map.values.toList().reversed.elementAt(index);
+    final key = map.keys.toList().reversed.elementAt(index);
+    return _Entry(value, onTap: () {
       final navigatorKey = DebuggerInterceptorHelper().navigatorKey;
       if (navigatorKey != null && navigatorKey.currentContext != null) {
         showCupertinoModalPopup(
             barrierColor: Colors.transparent,
             context: navigatorKey.currentContext!,
-            builder: (_) => _DebuggerDetail(key, model));
+            builder: (_) => _DebuggerDetail(key, value));
       }
     });
   }
