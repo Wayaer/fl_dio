@@ -6,6 +6,6 @@ flutter packages get
 
 echo "开始构建 web"
 
-flutter build web --web-renderer html
+flutter build web --base-href '/fl_dio/example/app/web/'
 
 mv 'build/web' 'app/web'
