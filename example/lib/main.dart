@@ -27,8 +27,6 @@ void main() {
   runApp(MaterialApp(
     navigatorKey: navigatorKey,
     debugShowCheckedModeBanner: false,
-    theme: ThemeData.light(useMaterial3: true),
-    darkTheme: ThemeData.dark(useMaterial3: true),
     home: const Scaffold(body: HomePage()),
   ));
 }
