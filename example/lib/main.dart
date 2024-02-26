@@ -29,12 +29,23 @@ void main() {
   runApp(DevicePreview(
       enabled: true,
       defaultDevice: Devices.ios.iPhone13Mini,
-      builder: (context) => MaterialApp(
-            navigatorKey: navigatorKey,
-            darkTheme: ThemeData.dark(),
-            debugShowCheckedModeBanner: false,
-            home: const Scaffold(body: HomePage()),
-          )));
+      builder: (context) => const _App()));
+}
+
+class _App extends StatelessWidget {
+  const _App();
+
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+      navigatorKey: navigatorKey,
+      locale: DevicePreview.locale(context),
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      debugShowCheckedModeBanner: false,
+      builder: (BuildContext context, Widget? child) {
+        return DevicePreview.appBuilder(context, child);
+      },
+      home: const Scaffold(body: HomePage()));
 }
 
 class HomePage extends StatefulWidget {
