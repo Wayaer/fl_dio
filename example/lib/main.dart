@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:device_preview_minus/device_preview_minus.dart';
 import 'package:fl_dio/fl_dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -24,11 +25,16 @@ void main() {
     /// cookie 保存和获取
     CookiesInterceptor()
   ]);
-  runApp(MaterialApp(
-    navigatorKey: navigatorKey,
-    debugShowCheckedModeBanner: false,
-    home: const Scaffold(body: HomePage()),
-  ));
+
+  runApp(DevicePreview(
+      enabled: true,
+      defaultDevice: Devices.ios.iPhone13Mini,
+      builder: (context) => MaterialApp(
+            navigatorKey: navigatorKey,
+            darkTheme: ThemeData.dark(),
+            debugShowCheckedModeBanner: false,
+            home: const Scaffold(body: HomePage()),
+          )));
 }
 
 class HomePage extends StatefulWidget {
