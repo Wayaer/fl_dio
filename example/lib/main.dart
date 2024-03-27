@@ -3,11 +3,23 @@ import 'dart:convert';
 import 'package:device_preview_minus/device_preview_minus.dart';
 import 'package:fl_dio/fl_dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
     GlobalKey<ScaffoldMessengerState>();
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+final interceptors = [
+  /// 日志打印
+  LoggerInterceptor(),
+
+  /// debug 调试工具
+  DebuggerInterceptor(),
+
+  /// cookie 保存和获取
+  CookiesInterceptor()
+];
 
 void main() {
   /// 必须设置 DebuggerInterceptorHelper
@@ -15,37 +27,20 @@ void main() {
 
   /// 设置JsonParse字体颜色
   JsonParse.color = JsonParseColor();
-  ExtendedDio().initialize(interceptors: [
-    /// 日志打印
-    LoggerInterceptor(),
-
-    /// debug 调试工具
-    DebuggerInterceptor(),
-
-    /// cookie 保存和获取
-    CookiesInterceptor()
-  ]);
 
   runApp(DevicePreview(
-      enabled: true,
+      enabled: kIsWeb,
       defaultDevice: Devices.ios.iPhone13Mini,
-      builder: (context) => const _App()));
-}
-
-class _App extends StatelessWidget {
-  const _App();
-
-  @override
-  Widget build(BuildContext context) => MaterialApp(
-      navigatorKey: navigatorKey,
-      locale: DevicePreview.locale(context),
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
-      debugShowCheckedModeBanner: false,
-      builder: (BuildContext context, Widget? child) {
-        return DevicePreview.appBuilder(context, child);
-      },
-      home: const Scaffold(body: HomePage()));
+      builder: (context) => MaterialApp(
+          navigatorKey: navigatorKey,
+          locale: DevicePreview.locale(context),
+          theme: ThemeData.light(),
+          darkTheme: ThemeData.dark(),
+          debugShowCheckedModeBanner: false,
+          builder: (BuildContext context, Widget? child) {
+            return DevicePreview.appBuilder(context, child);
+          },
+          home: const Scaffold(body: HomePage()))));
 }
 
 class HomePage extends StatefulWidget {
@@ -56,6 +51,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final dio = ExtendedDio()..interceptors.addAll(interceptors);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -85,12 +82,15 @@ class _HomePageState extends State<HomePage> {
   }
 
   void get() async {
-    await ExtendedDio().get(
+    final res = await dio.get(
         'https://lf3-beecdn.bytetos.com/obj/ies-fe-bee/bee_prod/biz_216/bee_prod_216_bee_publish_6676.json');
+    dioLog(res.toMap().toString());
   }
 
   void post() async {
-    showSnackBar('未添加');
+    final res = await dio.post(
+        'https://lf3-beecdn.bytetos.com/obj/ies-fe-bee/bee_prod/biz_216/bee_prod_216_bee_publish_6676.json');
+    dioLog(jsonEncode(res.toMap()));
   }
 
   void put() async {

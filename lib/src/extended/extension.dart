@@ -10,9 +10,11 @@ extension ExtensionExtendedResponse on ExtendedResponse {
         'extra': extra,
         'realUri': realUri.toMap(),
         'isRedirect': isRedirect,
-        'type': type,
+        'type': type?.name,
         'cookie': cookie,
-        'error': error,
+        'exception': exception is DioException
+            ? (exception as DioException).toMap()
+            : exception,
         'redirects': redirects
             .map((item) => {
                   'location': item.location,
@@ -31,7 +33,6 @@ extension ExtensionDioException on DioException {
         'requestOptions': requestOptions.toMap(),
         'response': response?.toMap(),
         'stackTrace': stackTrace.toString(),
-        // 'errorTime': responseTime?.format(DateTimeDist.yearMillisecond),
       };
 }
 

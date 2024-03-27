@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:fl_dio/src/log.dart';
+import 'package:fl_dio/src/extended/log.dart';
 
 class LoggerInterceptor extends InterceptorsWrapper {
   LoggerInterceptor(
@@ -31,9 +31,12 @@ class LoggerInterceptor extends InterceptorsWrapper {
       final hide = hideRequest
           .where((e) => options.uri.toString().contains(e))
           .isNotEmpty;
-      log('┌------------------------------------------------------------------------------');
-      log('''| [DIO] Request: ${options.method} ${options.uri}\n| QueryParameters:${hide ? ' [Hidden] ' : options.queryParameters}\n| Data:${hide ? ' [Hidden] ' : options.data}\n| Headers:$headers''');
-      log('├------------------------------------------------------------------------------');
+      dioLog(
+          '┌------------------------------------------------------------------------------');
+      dioLog(
+          '''| [DIO] Request: ${options.method} ${options.uri}\n| QueryParameters:${hide ? ' [Hidden] ' : options.queryParameters}\n| Data:${hide ? ' [Hidden] ' : options.data}\n| Headers:$headers''');
+      dioLog(
+          '├------------------------------------------------------------------------------');
     }
     super.onRequest(options, handler);
   }
@@ -48,11 +51,14 @@ class LoggerInterceptor extends InterceptorsWrapper {
       final hide = hideResponse
           .where((e) => requestUri.toString().contains(e))
           .isNotEmpty;
-      log('| [DIO] Response [statusCode : ${response.statusCode}] [statusMessage : ${response.statusMessage}]');
-      log('| [DIO] Request uri ($requestUri)');
-      log('| [DIO] Response data: ${hide ? '[Hidden]' : '\n${response.data}'}');
+      dioLog(
+          '| [DIO] Response [statusCode : ${response.statusCode}] [statusMessage : ${response.statusMessage}]');
+      dioLog('| [DIO] Request uri ($requestUri)');
+      dioLog(
+          '| [DIO] Response data: ${hide ? '[Hidden]' : '\n${response.data}'}');
     }
-    log('└------------------------------------------------------------------------------');
+    dioLog(
+        '└------------------------------------------------------------------------------');
     super.onResponse(response, handler);
   }
 
@@ -63,10 +69,12 @@ class LoggerInterceptor extends InterceptorsWrapper {
             .where((e) => err.requestOptions.uri.toString().contains(e))
             .isEmpty;
     if (hide) {
-      log('| [DIO] Response [statusCode : ${err.response?.statusCode}] [statusMessage : ${err.response?.statusMessage}]');
-      log('| [DIO] Error: ${err.error}: ${err.response?.toString()}');
-      log('|            : ${err.type}: ${err.message.toString()}');
-      log('└------------------------------------------------------------------------------');
+      dioLog(
+          '| [DIO] Response [statusCode : ${err.response?.statusCode}] [statusMessage : ${err.response?.statusMessage}]');
+      dioLog('| [DIO] Error: ${err.error}: ${err.response?.toString()}');
+      dioLog('|            : ${err.type}: ${err.message.toString()}');
+      dioLog(
+          '└------------------------------------------------------------------------------');
     }
     super.onError(err, handler);
   }

@@ -20,7 +20,7 @@ class CookiesInterceptor extends InterceptorsWrapper {
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     final cookies = setCookies?.call(options);
     if (cookies != null) options.headers.addAll(cookies);
-    super.onRequest(options, handler);
+    handler.next(options);
   }
 
   @override

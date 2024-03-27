@@ -1,8 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-void logDebug(dynamic msg) => debugPrint(msg.toString());
-
-void log(dynamic msg) {
+void dioLog(dynamic msg) {
   if (!(kDebugMode || kProfileMode)) return;
   final String message = msg.toString();
 
