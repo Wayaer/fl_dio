@@ -16,21 +16,6 @@ void main() {
   /// Set the JsonParse font color
   JsonParse.color = JsonParseColor();
 
-  /// ExtendedDio 添加全局拦截
-  /// Add an interceptor for ExtendedDio
-  /// 
-  ExtendedDio().initialize(interceptors: [
-
-    /// 日志打印
-    LoggerInterceptor(),
-
-    /// debug 调试工具
-    DebuggerInterceptor(),
-
-    /// cookie 保存和获取
-    CookiesInterceptor()
-  ]);
-
   ///  你也可以使用自己的dio，并添加拦截器，拦截器是独立存在的
   ///  You can also use your own dio and add interceptors, which stand alone
   List<Interceptor>list = [
@@ -44,6 +29,9 @@ void main() {
     /// cookie 保存和获取
     CookiesInterceptor(),
   ];
+  final dio = ExtendedDio()
+    ..interceptors.addAll(interceptors);
+  
   runApp(MaterialApp(
     navigatorKey: navigatorKey,
     debugShowCheckedModeBanner: false,
