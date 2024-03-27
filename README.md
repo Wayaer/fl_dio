@@ -4,6 +4,8 @@
 
 ### [Example web](https://wayaer.github.io/fl_dio/example/app/web/index.html#/)
 
+### 使用方法和 `Dio` 一致，只需替换 `Dio` 为 `ExtendedDio` 就可以不用写 `try catch` ,统一返回 `ExtendedResponse`
+
 ```dart
 void main() {
   GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -31,7 +33,7 @@ void main() {
   ];
   final dio = ExtendedDio()
     ..interceptors.addAll(interceptors);
-  
+
   runApp(MaterialApp(
     navigatorKey: navigatorKey,
     debugShowCheckedModeBanner: false,
