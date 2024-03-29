@@ -5,6 +5,7 @@ import 'package:fl_dio/fl_dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 
 GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
     GlobalKey<ScaffoldMessengerState>();
@@ -105,7 +106,14 @@ class _HomePageState extends State<HomePage> {
     showSnackBar('未添加');
   }
 
-  void download() async {}
+  void download() async {
+    final dir = await getApplicationCacheDirectory();
+    ExtendedDio().download(
+        'https://downv6.qq.com/qqweb/QQ_1/android_apk/Android_8.9.28.10155_537147618_64.apk',
+        '${dir.path}/file.apk', onReceiveProgress: (int count, int total) {
+      dioLog((count / total).toDouble());
+    });
+  }
 
   void upload() async {
     showSnackBar('未添加');
