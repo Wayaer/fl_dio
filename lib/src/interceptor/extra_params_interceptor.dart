@@ -8,11 +8,11 @@ typedef ValueCallbackExtraHeader = Map<String, dynamic>? Function(
 typedef ValueCallbackExtraParams = Map<String, dynamic>? Function(
     Uri uri, Map<String, dynamic> params);
 
-/// 扩展 path
-typedef ValueCallbackExtraPath = String? Function(Uri uri);
-
 /// 扩展 data
 typedef ValueCallbackExtraData = dynamic Function(Uri uri, dynamic data);
+
+/// 扩展 path
+typedef ValueCallbackExtraPath = String? Function(Uri uri);
 
 class ExtraParamsInterceptor extends InterceptorsWrapper {
   ExtraParamsInterceptor({
