@@ -11,6 +11,7 @@ export 'src/dio/extended_dio.dart';
 export 'src/interceptor/cookies_interceptor.dart';
 export 'src/interceptor/debugger_interceptor.dart';
 export 'src/interceptor/logger_interceptor.dart';
+export 'src/interceptor/extra_params_interceptor.dart';
 
 /// extended
 export 'src/extended/response.dart';

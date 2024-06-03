@@ -1,3 +1,7 @@
+## 1.1.0
+
+* Add `ExtraParamsInterceptor()`
+
 ## 1.0.0
 
 * Redevelop ExtendedDio,No more dio instances are created,It is the same as the Dio api, except that

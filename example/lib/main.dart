@@ -12,6 +12,22 @@ GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 final interceptors = [
+  /// 数据扩展
+  ExtraParamsInterceptor(
+      onExtraHeader: (Uri uri, Map<String, dynamic> headers) {
+    dioLog('onExtraHeader: $headers');
+    return null;
+  }, onExtraData: (Uri uri, dynamic data) {
+    dioLog('onExtraData: $data');
+    return null;
+  }, onExtraParams: (Uri uri, Map<String, dynamic> params) {
+    dioLog('onExtraParams: $params');
+    return null;
+  }, onExtraPath: (Uri uri) {
+    dioLog('onExtraPath: $uri');
+    return null;
+  }),
+
   /// 日志打印
   LoggerInterceptor(),
 
@@ -19,7 +35,7 @@ final interceptors = [
   DebuggerInterceptor(),
 
   /// cookie 保存和获取
-  CookiesInterceptor()
+  CookiesInterceptor(),
 ];
 
 void main() {
