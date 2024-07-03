@@ -1,6 +1,7 @@
 ## 1.1.1
 
 * Adding parameters and optimizing log output format for `LoggerInterceptor`
+* Update dio
 
 ## 1.1.0
 
