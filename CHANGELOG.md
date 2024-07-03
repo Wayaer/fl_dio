@@ -1,3 +1,7 @@
+## 1.1.1
+
+* Adding parameters and optimizing log output format for `LoggerInterceptor`
+
 ## 1.1.0
 
 * Add `ExtraParamsInterceptor()`

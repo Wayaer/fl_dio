@@ -69,6 +69,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final dio = ExtendedDio()..interceptors.addAll(interceptors);
+  final url =
+      'https://lf3-beecdn.bytetos.com/obj/ies-fe-bee/bee_prod/biz_216/bee_prod_216_bee_publish_6676.json';
 
   @override
   Widget build(BuildContext context) {
@@ -99,15 +101,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   void get() async {
-    final res = await dio.get(
-        'https://lf3-beecdn.bytetos.com/obj/ies-fe-bee/bee_prod/biz_216/bee_prod_216_bee_publish_6676.json');
-    dioLog(res.toMap().toString());
+    await dio.get(url);
   }
 
   void post() async {
-    final res = await dio.post(
-        'https://lf3-beecdn.bytetos.com/obj/ies-fe-bee/bee_prod/biz_216/bee_prod_216_bee_publish_6676.json');
-    dioLog(jsonEncode(res.toMap()));
+    await dio.post(url);
   }
 
   void put() async {
