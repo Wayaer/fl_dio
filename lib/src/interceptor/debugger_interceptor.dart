@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:fl_dio/fl_dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -108,8 +107,10 @@ class DebuggerInterceptorHelper {
 
   Future<void> showDebugger() async {
     if (navigatorKey != null && navigatorKey!.currentContext != null) {
-      await showCupertinoModalPopup(
+      await showModalBottomSheet(
           context: navigatorKey!.currentContext!,
+          isScrollControlled: true,
+          useSafeArea: true,
           builder: (_) => const _DebuggerList());
     }
   }
@@ -130,40 +131,33 @@ class _DebuggerList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-        padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 30),
-        child: Material(
-            color: theme.scaffoldBackgroundColor,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child:
-                  Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                _Toolbar(onDelete: () {
-                  DebuggerInterceptorHelper()._debugData.value = {};
-                }),
-                Expanded(
-                    child: ValueListenableBuilder<
-                            Map<int, DebuggerInterceptorDataModel>>(
-                        valueListenable: DebuggerInterceptorHelper()._debugData,
-                        builder: (_, map, __) => ListView.builder(
-                            padding: EdgeInsets.zero,
-                            itemCount: map.length,
-                            itemBuilder: (_, int index) =>
-                                itemBuilder(map, index))))
-              ]),
-            )));
+    return Material(
+        type: MaterialType.card,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+          _Toolbar(onDelete: () {
+            DebuggerInterceptorHelper()._debugData.value = {};
+          }),
+          Expanded(
+              child: ValueListenableBuilder<
+                      Map<int, DebuggerInterceptorDataModel>>(
+                  valueListenable: DebuggerInterceptorHelper()._debugData,
+                  builder: (_, map, __) => ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: map.length,
+                      itemBuilder: (_, int index) => itemBuilder(map, index))))
+        ]));
   }
 
   Widget itemBuilder(Map<int, DebuggerInterceptorDataModel> map, int index) {
     final value = map.values.toList().reversed.elementAt(index);
     final key = map.keys.toList().reversed.elementAt(index);
-    return _Entry(value, onTap: () {
+    return _HttpCard(value, onTap: () {
       final navigatorKey = DebuggerInterceptorHelper().navigatorKey;
       if (navigatorKey != null && navigatorKey.currentContext != null) {
-        showCupertinoModalPopup(
-            barrierColor: Colors.transparent,
+        showModalBottomSheet(
+            isScrollControlled: true,
+            useSafeArea: true,
             context: navigatorKey.currentContext!,
             builder: (_) => _DebuggerDetail(key, value));
       }
@@ -241,8 +235,8 @@ class _DebuggerIconState extends State<_DebuggerIcon> {
   }
 }
 
-class _Entry extends StatelessWidget {
-  const _Entry(this.model, {this.onTap});
+class _HttpCard extends StatelessWidget {
+  const _HttpCard(this.model, {this.onTap});
 
   final DebuggerInterceptorDataModel model;
 
@@ -254,7 +248,7 @@ class _Entry extends StatelessWidget {
         model.response?.statusCode ?? model.error?.response?.statusCode;
     return Card(
         child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8),
             child: GestureDetector(
                 onLongPress: () {
                   Clipboard.setData(
@@ -275,7 +269,9 @@ class _Entry extends StatelessWidget {
                                 color: statusCodeColor(statusCode ?? 0),
                                 borderRadius: BorderRadius.circular(4)),
                             child: Text(statusCode?.toString() ?? 'N/A',
-                                style: const TextStyle(color: Colors.white)))
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600)))
                       ]),
                   const SizedBox(height: 4),
                   Row(children: [
@@ -288,7 +284,10 @@ class _Entry extends StatelessWidget {
                         child: const Icon(Icons.lock_open,
                             size: 18, color: Colors.green)),
                     Expanded(
-                        child: Text(model.requestOptions?.baseUrl ?? 'N/A'))
+                        child: Text(
+                      model.requestOptions?.baseUrl ?? 'N/A',
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ))
                   ]),
                   const SizedBox(height: 4),
                   SizedBox(
@@ -301,17 +300,22 @@ class _Entry extends StatelessWidget {
                       children: [
                         Expanded(
                             flex: 3,
-                            child: Text(requestTime(model.requestTime))),
+                            child: Text(requestTime(model.requestTime),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w500))),
                         Expanded(
-                            flex: 2,
                             child: Text(
                                 stringToBytes(
                                     model.response?.data?.toString() ?? ''),
-                                textAlign: TextAlign.center)),
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w500))),
                         Expanded(
                             child: Text(
                                 '${diffMillisecond(model.requestTime, model.responseTime)} ms',
-                                textAlign: TextAlign.end)),
+                                textAlign: TextAlign.end,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w500))),
                       ]),
                 ]))));
   }
@@ -337,19 +341,8 @@ class _Entry extends StatelessWidget {
   }
 
   Color statusCodeColor(int statusCode) {
-    if (statusCode >= 100 && statusCode < 200) {
-      return Colors.blue;
-    } else if (statusCode >= 200 && statusCode < 300) {
-      return Colors.green;
-    } else if (statusCode >= 300 && statusCode < 400) {
-      return Colors.yellow;
-    } else if (statusCode >= 400 && statusCode < 500) {
-      return Colors.orange;
-    } else if (statusCode >= 500) {
-      return Colors.red;
-    } else {
-      return Colors.grey;
-    }
+    if (statusCode == 200) return Colors.green;
+    return Colors.red;
   }
 }
 
@@ -361,55 +354,44 @@ class _DebuggerDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final mediaQuery = MediaQuery.of(context);
     final tabs = ['request', 'response', 'error'];
     return DefaultTabController(
         length: tabs.length,
-        child: Padding(
-          padding: EdgeInsets.only(
-              top: mediaQuery.padding.top + 30, left: 8, right: 8, bottom: 8),
-          child: Material(
-              color: theme.scaffoldBackgroundColor,
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(10)),
-              child:
-                  Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                _Toolbar(onDelete: () {
-                  Navigator.of(context).maybePop();
-                  final map =
-                      Map.of(DebuggerInterceptorHelper()._debugData.value);
-                  map.remove(iKey);
-                  DebuggerInterceptorHelper()._debugData.value = map;
-                }),
-                _Entry(model),
+        child: Material(
+            type: MaterialType.card,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+              _Toolbar(onDelete: () {
+                Navigator.of(context).maybePop();
+                final map =
+                    Map.of(DebuggerInterceptorHelper()._debugData.value);
+                map.remove(iKey);
+                DebuggerInterceptorHelper()._debugData.value = map;
+              }),
+              _HttpCard(model),
+              Expanded(
+                  child: Column(children: [
+                SizedBox(
+                    height: 38,
+                    child: TabBar(
+                        indicatorSize: TabBarIndicatorSize.label,
+                        tabs: tabs.map((item) => Tab(text: item)).toList())),
                 Expanded(
-                    child: Column(children: [
-                  SizedBox(
-                      height: 38,
-                      child: TabBar(
-                          indicatorSize: TabBarIndicatorSize.label,
-                          tabs: tabs.map((item) => Tab(text: item)).toList())),
-                  Expanded(
-                      child: Padding(
-                    padding: EdgeInsets.only(
-                        bottom: mediaQuery.padding.bottom, top: 10),
                     child: TabBarView(
                         children: tabs.map((item) {
-                      Widget entry = const SizedBox();
-                      if (item == tabs.first) {
-                        entry = JsonParse(model.requestOptionsToMap());
-                      } else if (item == tabs[1]) {
-                        entry = JsonParse(model.responseToMap());
-                      } else if (item == tabs.last) {
-                        entry = JsonParse(model.errorToMap());
-                      }
-                      return Card(child: entry);
-                    }).toList()),
-                  ))
-                ])),
+                  Widget entry = const SizedBox();
+                  if (item == tabs.first) {
+                    entry = JsonParse(model.requestOptionsToMap());
+                  } else if (item == tabs[1]) {
+                    entry = JsonParse(model.responseToMap());
+                  } else if (item == tabs.last) {
+                    entry = JsonParse(model.errorToMap());
+                  }
+                  return Card(child: entry);
+                }).toList()))
               ])),
-        ));
+            ])));
   }
 }
 

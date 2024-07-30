@@ -28,6 +28,7 @@ class JsonParseColor {
 }
 
 typedef JsonParseTextBuilder = Widget Function(Color color, String content);
+typedef JsonParseToastBuilder = void Function(String content);
 
 class JsonParse extends StatefulWidget {
   JsonParse(this.json, {super.key})
@@ -43,6 +44,9 @@ class JsonParse extends StatefulWidget {
 
   /// text builder
   static JsonParseTextBuilder? textBuilder;
+
+  /// toast builder
+  static JsonParseToastBuilder? toastBuilder;
 
   final Map<dynamic, dynamic> json;
   final List<dynamic> list;
@@ -155,6 +159,7 @@ class _JsonParseState extends State<JsonParse> {
             onTap: isToClipboard
                 ? () {
                     Clipboard.setData(ClipboardData(text: content.toString()));
+                    JsonParse.toastBuilder?.call(content.toString());
                   }
                 : null,
             child: JsonParse.textBuilder?.call(color, text) ??

@@ -18,6 +18,12 @@ void main() {
   /// Set the JsonParse font color
   JsonParse.color = JsonParseColor();
 
+  /// toast 提示
+  /// toast Tips
+  JsonParse.toastBuilder = (String content) {
+    showToast('已复制：$content');
+  };
+
   ///  你也可以使用自己的dio，并添加拦截器，拦截器是独立存在的
   ///  You can also use your own dio and add interceptors, which stand alone
   List<Interceptor>list = [
@@ -34,11 +40,9 @@ void main() {
   final dio = ExtendedDio()
     ..interceptors.addAll(interceptors);
 
+
   runApp(MaterialApp(
     navigatorKey: navigatorKey,
-    debugShowCheckedModeBanner: false,
-    theme: ThemeData.light(useMaterial3: true),
-    darkTheme: ThemeData.dark(useMaterial3: true),
     home: const Scaffold(body: HomePage()),
   ));
 }

@@ -1,3 +1,9 @@
+## 1.2.0
+
+* Adding a static method for `toastBuilder` to `JsonParse`
+* Optimize the UI style of `DebuggerInterceptor`
+* Update dio
+
 ## 1.1.1
 
 * Adding parameters and optimizing log output format for `LoggerInterceptor`

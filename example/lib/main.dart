@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:device_preview_minus/device_preview_minus.dart';
 import 'package:fl_dio/fl_dio.dart';
+import 'package:fl_extended/fl_extended.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -39,11 +40,21 @@ final interceptors = [
 ];
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
   /// 必须设置 DebuggerInterceptorHelper
   DebuggerInterceptorHelper().navigatorKey = navigatorKey;
 
   /// 设置JsonParse字体颜色
   JsonParse.color = JsonParseColor();
+
+  /// 初始化Toast工具
+  FlExtended().navigatorKey = navigatorKey;
+
+  /// toast 提示
+  JsonParse.toastBuilder = (String content) {
+    showToast('已复制：$content');
+  };
 
   runApp(DevicePreview(
       enabled: kIsWeb,
