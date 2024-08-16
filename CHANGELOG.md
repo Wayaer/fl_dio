@@ -1,3 +1,8 @@
+## 1.2.1
+
+* Add `requestDataToJson` `requestQueryParametersToJson` and `responseDataToJson` to the `LoggerInterceptor`
+* Update dio
+
 ## 1.2.0
 
 * Adding a static method for `toastBuilder` to `JsonParse`

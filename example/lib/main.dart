@@ -30,7 +30,10 @@ final interceptors = [
   }),
 
   /// 日志打印
-  LoggerInterceptor(),
+  LoggerInterceptor(
+      requestDataToJson: true,
+      responseDataToJson: true,
+      requestQueryParametersToJson: true),
 
   /// debug 调试工具
   DebuggerInterceptor(),
@@ -116,7 +119,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   void post() async {
-    await dio.post(url);
+    await dio.post(url,
+        data: {'key': 'data'}, queryParameters: {'key': 'queryParameters'});
   }
 
   void put() async {

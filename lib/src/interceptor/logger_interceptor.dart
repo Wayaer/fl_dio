@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:fl_dio/src/extended/log.dart';
 
@@ -7,6 +9,9 @@ class LoggerInterceptor extends InterceptorsWrapper {
     this.hideRequest = const [],
     this.hideResponse = const [],
     this.printResponseHeader = false,
+    this.requestQueryParametersToJson = false,
+    this.requestDataToJson = false,
+    this.responseDataToJson = false,
   });
 
   /// 过滤掉 完全不显示的api
@@ -23,6 +28,18 @@ class LoggerInterceptor extends InterceptorsWrapper {
   /// 是否打印 response header
   final bool printResponseHeader;
 
+  /// 请求参数转 json
+  /// 参数必须为 [Map] 才会转
+  final bool requestQueryParametersToJson;
+
+  /// 请求参数转 json
+  /// 参数必须为 [Map] 才会转
+  final bool requestDataToJson;
+
+  /// 返回数据转 json
+  /// 返回数据必须为 [Map] 才会转
+  final bool responseDataToJson;
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     final uri = options.uri.toString();
@@ -33,13 +50,24 @@ class LoggerInterceptor extends InterceptorsWrapper {
       dioLog(
           '┌--------------------------------------------------------------------');
       dioLog('''| [DIO] Request: ${options.method} $uri
-| [DIO] QueryParameters:${isPrint ? options.queryParameters : ' [Hidden] '}
-| [DIO] Data:${isPrint ? options.data : ' [Hidden] '}
+| [DIO] QueryParameters:${isPrint ? toJson(options.queryParameters, requestQueryParametersToJson) : ' [Hidden] '}
+| [DIO] Data:${isPrint ? toJson(options.data, requestDataToJson) : ' [Hidden] '}
 | [DIO] Headers:${options.headers}''');
       dioLog(
           '├--------------------------------------------------------------------');
     }
     super.onRequest(options, handler);
+  }
+
+  dynamic toJson(dynamic data, bool toJson) {
+    if (data is Map && toJson) {
+      try {
+        return jsonEncode(data);
+      } catch (e) {
+        dioLog('LoggerInterceptor to json error :$e');
+      }
+    }
+    return data;
   }
 
   @override
@@ -52,7 +80,7 @@ class LoggerInterceptor extends InterceptorsWrapper {
       dioLog(
           '''| [DIO] Response [statusCode : ${response.statusCode}] [statusMessage : ${response.statusMessage}]'
 | [DIO] Request uri: ${response.requestOptions.method} $requestUri ${printResponseHeader ? '\n| [DIO] Response headers: ${response.headers.map}' : ''}
-| [DIO] Response data: ${isPrint ? '${response.data}' : ' [Hidden] '}''');
+| [DIO] Response data: ${isPrint ? '${toJson(response.data, responseDataToJson)}' : ' [Hidden] '}''');
       dioLog(
           '└--------------------------------------------------------------------');
     }
