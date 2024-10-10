@@ -1,3 +1,7 @@
+## 1.2.2
+
+* Update dio
+
 ## 1.2.1
 
 * Add `requestDataToJson` `requestQueryParametersToJson` and `responseDataToJson` to the `LoggerInterceptor`
