@@ -4,6 +4,14 @@ import 'package:fl_dio/fl_dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+class _ValueNotifiers<T> extends ValueNotifier<T> {
+  _ValueNotifiers(super.value);
+
+  void notify() {
+    notifyListeners();
+  }
+}
+
 class DebuggerInterceptorDataModel {
   DebuggerInterceptorDataModel(
       {this.requestOptions, this.response, this.error});
@@ -47,6 +55,7 @@ class DebuggerInterceptor extends InterceptorsWrapper {
     dataModel.requestTime = DateTime.now();
     dataModel.requestOptions = options;
     DebuggerInterceptorHelper()._debugData.value[options.hashCode] = dataModel;
+    DebuggerInterceptorHelper()._debugData.notify();
     super.onRequest(options, handler);
   }
 
@@ -61,6 +70,7 @@ class DebuggerInterceptor extends InterceptorsWrapper {
         ._debugData
         .value[response.requestOptions.hashCode]
         ?.responseTime = DateTime.now();
+    DebuggerInterceptorHelper()._debugData.notify();
     DebuggerInterceptorHelper().show();
     super.onResponse(response, handler);
   }
@@ -75,6 +85,7 @@ class DebuggerInterceptor extends InterceptorsWrapper {
         ._debugData
         .value[err.requestOptions.hashCode]
         ?.errorTime = DateTime.now();
+    DebuggerInterceptorHelper()._debugData.notify();
     DebuggerInterceptorHelper().show();
     super.onError(err, handler);
   }
@@ -92,8 +103,8 @@ class DebuggerInterceptorHelper {
 
   OverlayEntry? _overlayEntry;
 
-  final ValueNotifier<Map<int, DebuggerInterceptorDataModel>> _debugData =
-      ValueNotifier({});
+  final _ValueNotifiers<Map<int, DebuggerInterceptorDataModel>> _debugData =
+      _ValueNotifiers({});
 
   void show() {
     _overlayEntry ??=
@@ -177,13 +188,13 @@ class _DebuggerIcon extends StatefulWidget {
 
 class _DebuggerIconState extends State<_DebuggerIcon> {
   bool hasWindows = false;
-  Offset offSet = const Offset(10, 10);
+  Offset offSet = const Offset(60, 10);
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      offSet = Offset(30, MediaQuery.of(context).padding.top + 20);
+      offSet = Offset(60, MediaQuery.of(context).padding.top + 8);
       setState(() {});
     });
   }

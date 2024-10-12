@@ -1,6 +1,7 @@
-## 1.2.2
+## 1.2.3
 
 * Update dio
+* `DebuggerInterceptor` support real-time refresh
 
 ## 1.2.1
 
