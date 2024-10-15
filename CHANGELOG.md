@@ -1,4 +1,4 @@
-## 1.3.0
+## 1.3.1
 
 * Fix the display issue of `DebuggerInterceptor` for bytes and streams
 * Fix the display issue of `LoggerInterceptor` for bytes and streams

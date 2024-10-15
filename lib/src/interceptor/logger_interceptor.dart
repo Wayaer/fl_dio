@@ -54,7 +54,7 @@ class LoggerInterceptor extends InterceptorsWrapper {
           '┌--------------------------------------------------------------------');
       dioLog('''| [DIO] Request: ${options.method} $uri
 | [DIO] QueryParameters:${convertData(options.queryParameters, isPrint: isPrint, toJson: requestQueryParametersToJson)}
-| [DIO] Data:${convertData(options.data, isPrint: isPrint, toJson: requestDataToJson, responseType: options.responseType)} '}
+| [DIO] Data:${convertData(options.data, isPrint: isPrint, toJson: requestDataToJson, responseType: options.responseType)}
 | [DIO] Headers:${options.headers}''');
       dioLog(
           '├--------------------------------------------------------------------');
@@ -78,7 +78,7 @@ class LoggerInterceptor extends InterceptorsWrapper {
         dioLog('LoggerInterceptor to json error :$e');
       }
     } else if (responseType == ResponseType.bytes && !isPrintBytes) {
-      return 'ResponseType.bytes: ${data.runtimeType} [${data is List ? data.length : ''}]';
+      return 'ResponseType.bytes: ${data?.runtimeType} [${data is List ? data.length : '0'}]';
     } else if (responseType == ResponseType.stream && data is ResponseBody) {
       return 'ResponseType.stream: ${data.runtimeType} [${data.contentLength}]';
     }
