@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -60,12 +62,8 @@ class _JsonParseState extends State<JsonParse> {
   Map<String, bool> mapFlag = <String, bool>{};
 
   @override
-  Widget build(BuildContext context) => SingleChildScrollView(
-      child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start, children: children));
-
-  List<Widget> get children {
-    final List<Widget> list = [];
+  Widget build(BuildContext context) {
+    List<Widget> list = [];
     widget.json.entries.map((MapEntry<dynamic, dynamic> entry) {
       final dynamic key = entry.key;
       final dynamic content = entry.value;
@@ -107,7 +105,7 @@ class _JsonParseState extends State<JsonParse> {
         list.add(getContentWidget(content));
       }
     }).toList();
-    return list;
+    return SingleChildScrollView(child: Column(children: list));
   }
 
   Widget buildItem(Color color, String text) =>
@@ -144,7 +142,7 @@ class _JsonParseState extends State<JsonParse> {
     } else if (content is List) {
       text = content.isEmpty
           ? '[0]'
-          : '<${content.runtimeType.toString()}>[${content.length}]';
+          : '<${content.runtimeType}>[${content.length}]';
       color = JsonParse.color.typeList;
     } else if (content is Map) {
       text = 'Map [${content.length}]';
@@ -156,7 +154,7 @@ class _JsonParseState extends State<JsonParse> {
     }
     return Expanded(
         child: GestureDetector(
-            onTap: isToClipboard
+            onLongPress: isToClipboard
                 ? () {
                     Clipboard.setData(ClipboardData(text: content.toString()));
                     JsonParse.toastBuilder?.call(content.toString());
@@ -168,10 +166,7 @@ class _JsonParseState extends State<JsonParse> {
                     textAlign: TextAlign.left)));
   }
 
-  bool isTap(dynamic content) => !(content == null ||
-      content is int ||
-      content is String ||
-      content is bool ||
-      content is double ||
-      (content is List && content.isEmpty));
+  bool isTap(dynamic content) =>
+      (content is Map && content.isNotEmpty) ||
+      (content is List && content.isNotEmpty && content is! TypedData);
 }

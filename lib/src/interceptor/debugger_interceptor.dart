@@ -257,6 +257,7 @@ class _HttpCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final statusCode =
         model.response?.statusCode ?? model.error?.response?.statusCode;
+    final textTheme = Theme.of(context).textTheme;
     return Card(
         child: Padding(
             padding: const EdgeInsets.all(8),
@@ -271,8 +272,9 @@ class _HttpCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(model.requestOptions?.method ?? 'unknown',
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold)),
+                            style: (textTheme.bodyLarge ?? const TextStyle())
+                                .copyWith(
+                                    fontSize: 16, fontWeight: FontWeight.bold)),
                         Container(
                             padding: const EdgeInsets.symmetric(
                                 vertical: 4, horizontal: 10),
@@ -280,11 +282,13 @@ class _HttpCard extends StatelessWidget {
                                 color: statusCodeColor(statusCode ?? 0),
                                 borderRadius: BorderRadius.circular(4)),
                             child: Text(statusCode?.toString() ?? 'N/A',
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600)))
+                                style:
+                                    (textTheme.bodyMedium ?? const TextStyle())
+                                        .copyWith(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600)))
                       ]),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Row(children: [
                     Visibility(
                         visible:
@@ -295,38 +299,36 @@ class _HttpCard extends StatelessWidget {
                         child: const Icon(Icons.lock_open,
                             size: 18, color: Colors.green)),
                     Expanded(
-                        child: Text(
-                      model.requestOptions?.baseUrl ?? 'N/A',
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ))
+                        child: Text(model.requestOptions?.baseUrl ?? 'N/A',
+                            style: textTheme.bodyMedium))
                   ]),
                   const SizedBox(height: 4),
                   SizedBox(
                       width: double.infinity,
                       child: Text(model.requestOptions?.path ?? 'unknown',
+                          style: textTheme.bodyMedium,
                           textAlign: TextAlign.left)),
                   const SizedBox(height: 4),
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
-                            flex: 3,
+                            flex: 5,
                             child: Text(requestTime(model.requestTime),
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w500))),
+                                style: textTheme.bodySmall)),
                         Expanded(
+                            flex: 2,
                             child: Text(
                                 stringToBytes(
                                     model.response?.data?.toString() ?? ''),
                                 textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w500))),
+                                style: textTheme.bodySmall)),
                         Expanded(
+                            flex: 2,
                             child: Text(
                                 '${diffMillisecond(model.requestTime, model.responseTime)} ms',
                                 textAlign: TextAlign.end,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w500))),
+                                style: textTheme.bodySmall)),
                       ]),
                 ]))));
   }

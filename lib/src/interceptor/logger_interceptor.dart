@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:fl_dio/src/extended/log.dart';
 
@@ -12,6 +11,7 @@ class LoggerInterceptor extends InterceptorsWrapper {
     this.requestQueryParametersToJson = false,
     this.requestDataToJson = false,
     this.responseDataToJson = false,
+    this.isPrintBytes = false,
   });
 
   /// 过滤掉 完全不显示的api
@@ -40,6 +40,9 @@ class LoggerInterceptor extends InterceptorsWrapper {
   /// 返回数据必须为 [Map] 才会转
   final bool responseDataToJson;
 
+  /// 是否打印 bytes
+  final bool isPrintBytes;
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     final uri = options.uri.toString();
@@ -50,8 +53,8 @@ class LoggerInterceptor extends InterceptorsWrapper {
       dioLog(
           '┌--------------------------------------------------------------------');
       dioLog('''| [DIO] Request: ${options.method} $uri
-| [DIO] QueryParameters:${isPrint ? toJson(options.queryParameters, requestQueryParametersToJson) : ' [Hidden] '}
-| [DIO] Data:${isPrint ? toJson(options.data, requestDataToJson) : ' [Hidden] '}
+| [DIO] QueryParameters:${convertData(options.queryParameters, isPrint: isPrint, toJson: requestQueryParametersToJson)}
+| [DIO] Data:${convertData(options.data, isPrint: isPrint, toJson: requestDataToJson, responseType: options.responseType)} '}
 | [DIO] Headers:${options.headers}''');
       dioLog(
           '├--------------------------------------------------------------------');
@@ -59,13 +62,25 @@ class LoggerInterceptor extends InterceptorsWrapper {
     super.onRequest(options, handler);
   }
 
-  dynamic toJson(dynamic data, bool toJson) {
+  dynamic convertData(
+    dynamic data, {
+    bool isPrint = false,
+    bool toJson = false,
+    ResponseType? responseType,
+  }) {
+    if (!isPrint) {
+      return ' [Hidden] ';
+    }
     if (data is Map && toJson) {
       try {
         return jsonEncode(data);
       } catch (e) {
         dioLog('LoggerInterceptor to json error :$e');
       }
+    } else if (responseType == ResponseType.bytes && !isPrintBytes) {
+      return 'ResponseType.bytes: ${data.runtimeType} [${data is List ? data.length : ''}]';
+    } else if (responseType == ResponseType.stream && data is ResponseBody) {
+      return 'ResponseType.stream: ${data.runtimeType} [${data.contentLength}]';
     }
     return data;
   }
@@ -78,9 +93,9 @@ class LoggerInterceptor extends InterceptorsWrapper {
     if (isPrint) {
       final isPrint = hideResponse.where((e) => requestUri.contains(e)).isEmpty;
       dioLog(
-          '''| [DIO] Response [statusCode : ${response.statusCode}] [statusMessage : ${response.statusMessage}]'
+          '''| [DIO] Response [statusCode : ${response.statusCode}] [statusMessage : ${response.statusMessage}]
 | [DIO] Request uri: ${response.requestOptions.method} $requestUri ${printResponseHeader ? '\n| [DIO] Response headers: ${response.headers.map}' : ''}
-| [DIO] Response data: ${isPrint ? '${toJson(response.data, responseDataToJson)}' : ' [Hidden] '}''');
+| [DIO] Response data: ${convertData(response.data, isPrint: isPrint, toJson: responseDataToJson, responseType: response.requestOptions.responseType)}''');
       dioLog(
           '└--------------------------------------------------------------------');
     }

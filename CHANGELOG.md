@@ -1,3 +1,9 @@
+## 1.3.0
+
+* Fix the display issue of `DebuggerInterceptor` for bytes and streams
+* Fix the display issue of `LoggerInterceptor` for bytes and streams
+* Fix click issue with `JsonParse` value
+
 ## 1.2.3
 
 * Update dio

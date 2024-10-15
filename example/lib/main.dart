@@ -100,6 +100,7 @@ class _HomePageState extends State<HomePage> {
                 onPressed: DebuggerInterceptorHelper().showDebugger),
             ElevatedText('hide', onPressed: DebuggerInterceptorHelper().hide),
             ElevatedText('get', onPressed: get),
+            ElevatedText('get bytes', onPressed: getBytes),
             ElevatedText('post', onPressed: post),
             ElevatedText('put', onPressed: put),
             ElevatedText('delete', onPressed: delete),
@@ -114,16 +115,20 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void get() async {
-    await dio.get(url);
+  void getBytes() {
+    dio.get(url, options: Options(responseType: ResponseType.bytes));
   }
 
-  void post() async {
-    await dio.post(url,
+  void get() {
+    dio.get(url);
+  }
+
+  void post() {
+    dio.post(url,
         data: {'key': 'data'}, queryParameters: {'key': 'queryParameters'});
   }
 
-  void put() async {
+  void put() {
     showSnackBar('未添加');
   }
 
