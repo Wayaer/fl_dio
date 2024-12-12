@@ -10,9 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  device_preview_minus: ^1.0.6
-  path_provider: ^2.1.4
-  fl_extended: ^1.5.0
+  path_provider: ^2.1.5
+  fl_extended: ^1.6.0
   fl_dio:
     path: ../
 

@@ -1,10 +1,8 @@
 import 'dart:convert';
 
-import 'package:device_preview_minus/device_preview_minus.dart';
 import 'package:fl_dio/fl_dio.dart';
 import 'package:fl_extended/fl_extended.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -59,19 +57,12 @@ void main() {
     showToast('已复制：$content');
   };
 
-  runApp(DevicePreview(
-      enabled: kIsWeb,
-      defaultDevice: Devices.ios.iPhone13Mini,
-      builder: (context) => MaterialApp(
-          navigatorKey: navigatorKey,
-          locale: DevicePreview.locale(context),
-          theme: ThemeData.light(),
-          darkTheme: ThemeData.dark(),
-          debugShowCheckedModeBanner: false,
-          builder: (BuildContext context, Widget? child) {
-            return DevicePreview.appBuilder(context, child);
-          },
-          home: const Scaffold(body: HomePage()))));
+  runApp(MaterialApp(
+      navigatorKey: navigatorKey,
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      debugShowCheckedModeBanner: false,
+      home: const Scaffold(body: Center(child: HomePage()))));
 }
 
 class HomePage extends StatefulWidget {
@@ -90,6 +81,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.center,
+      constraints: BoxConstraints(maxWidth: 280),
       child: Wrap(
           runSpacing: 12,
           spacing: 12,
