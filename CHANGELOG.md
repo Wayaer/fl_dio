@@ -1,3 +1,7 @@
+## 1.3.2
+
+* Update dio
+
 ## 1.3.1
 
 * Fix the display issue of `DebuggerInterceptor` for bytes and streams

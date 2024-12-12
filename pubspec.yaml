@@ -1,6 +1,6 @@
 name: fl_dio
 description: Extended dio and added three interceptors and the JsonParse component.
-version: 1.3.1
+version: 1.3.2
 repository: https://github.com/Wayaer/fl_dio
 
 environment:
