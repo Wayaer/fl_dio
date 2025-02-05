@@ -203,6 +203,7 @@ mixin ExtendedDioMixin on DioMixin implements ExtendedDio {
     CancelToken? cancelToken,
     bool deleteOnError = true,
     String lengthHeader = Headers.contentLengthHeader,
+    FileAccessMode fileAccessMode = FileAccessMode.write,
     Object? data,
     Options? options,
   }) =>
@@ -212,6 +213,7 @@ mixin ExtendedDioMixin on DioMixin implements ExtendedDio {
           options: options,
           deleteOnError: deleteOnError,
           lengthHeader: lengthHeader,
+          fileAccessMode: fileAccessMode,
           cancelToken: cancelToken,
           onReceiveProgress: onReceiveProgress));
 
@@ -224,6 +226,7 @@ mixin ExtendedDioMixin on DioMixin implements ExtendedDio {
     CancelToken? cancelToken,
     bool deleteOnError = true,
     String lengthHeader = Headers.contentLengthHeader,
+    FileAccessMode fileAccessMode = FileAccessMode.write,
     Object? data,
     Options? options,
   }) =>
@@ -232,6 +235,7 @@ mixin ExtendedDioMixin on DioMixin implements ExtendedDio {
           options: options,
           deleteOnError: deleteOnError,
           lengthHeader: lengthHeader,
+          fileAccessMode: fileAccessMode,
           cancelToken: cancelToken,
           onReceiveProgress: onReceiveProgress));
 

@@ -5,13 +5,13 @@ version: 1.0.0+1
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
-  flutter: ">=3.24.0"
+  flutter: '>=3.24.0'
 
 dependencies:
   flutter:
     sdk: flutter
   path_provider: ^2.1.5
-  fl_extended: ^1.6.0
+  fl_extended: ^1.6.3
   fl_dio:
     path: ../
 

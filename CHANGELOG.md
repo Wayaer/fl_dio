@@ -1,6 +1,6 @@
-## 1.3.2
+## 1.4.0
 
-* Update dio
+* Update dio to 5.8.0
 
 ## 1.3.1
 

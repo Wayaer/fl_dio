@@ -199,6 +199,7 @@ abstract class ExtendedDio implements Dio {
     CancelToken? cancelToken,
     bool deleteOnError = true,
     String lengthHeader = Headers.contentLengthHeader,
+    FileAccessMode fileAccessMode = FileAccessMode.write,
     Object? data,
     Options? options,
   });
@@ -212,12 +213,14 @@ abstract class ExtendedDio implements Dio {
     CancelToken? cancelToken,
     bool deleteOnError = true,
     String lengthHeader = Headers.contentLengthHeader,
+    FileAccessMode fileAccessMode = FileAccessMode.write,
     Object? data,
     Options? options,
   }) =>
       download(uri.toString(), savePath,
           onReceiveProgress: onReceiveProgress,
           lengthHeader: lengthHeader,
+          fileAccessMode: fileAccessMode,
           deleteOnError: deleteOnError,
           cancelToken: cancelToken,
           data: data,
