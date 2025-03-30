@@ -1,3 +1,8 @@
+## 1.5.0
+
+* Add `UniversalHttpClientAdapter`,Create different adapters on web and native, and support
+  parameter settings
+
 ## 1.4.0
 
 * Update dio to 5.8.0
@@ -15,7 +20,8 @@
 
 ## 1.2.1
 
-* Add `requestDataToJson` `requestQueryParametersToJson` and `responseDataToJson` to the `LoggerInterceptor`
+* Add `requestDataToJson` `requestQueryParametersToJson` and `responseDataToJson` to the
+  `LoggerInterceptor`
 * Update dio
 
 ## 1.2.0

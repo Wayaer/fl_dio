@@ -5,6 +5,8 @@ export 'package:http_parser/http_parser.dart';
 export 'src/dio.dart';
 export 'src/dio/extended_dio.dart';
 
+export 'src/adapter/universal_adapter.dart';
+
 /// interceptor
 export 'src/interceptor/cookies_interceptor.dart';
 export 'src/interceptor/debugger_interceptor.dart';

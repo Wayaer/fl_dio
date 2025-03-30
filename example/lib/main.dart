@@ -78,6 +78,21 @@ class _HomePageState extends State<HomePage> {
       'https://lf3-beecdn.bytetos.com/obj/ies-fe-bee/bee_prod/biz_216/bee_prod_216_bee_publish_6676.json';
 
   @override
+  void initState() {
+    super.initState();
+    dio.httpClientAdapter = UniversalHttpClientAdapter(
+
+        /// for web
+        withCredentials: false,
+
+        /// for native
+        createHttpClient: null,
+
+        /// for native
+        validateCertificate: (_, __, ___) => true).create();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.center,
