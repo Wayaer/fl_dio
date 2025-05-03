@@ -162,6 +162,7 @@ class _JsonParseState extends State<JsonParse> {
                 : null,
             child: JsonParse.textBuilder?.call(color, text) ??
                 Text(text,
+                    maxLines: 10,
                     style: TextStyle(color: color, fontWeight: FontWeight.w400),
                     textAlign: TextAlign.left)));
   }

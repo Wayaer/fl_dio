@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:fl_dio/fl_dio.dart';
 
 extension ExtensionExtendedResponse on ExtendedResponse {
@@ -40,7 +42,7 @@ extension ExtensionResponse on Response {
   Map<String, dynamic> toMap() => {
         'headers': headers.map,
         'requestOptions': requestOptions.toMap(),
-        'data': data,
+        'data': dataToMap(),
         'statusCode': statusCode,
         'statusMessage': statusMessage,
         'extra': extra,
@@ -54,6 +56,19 @@ extension ExtensionResponse on Response {
                 })
             .toList()
       };
+
+  dynamic dataToMap() {
+    if (data is Map) return data;
+    if (data is String) {
+      try {
+        return jsonDecode(data);
+      } catch (e) {
+        dioLog('ExtensionResponse dataToMap:$e');
+      }
+      return data;
+    }
+    return '${data.runtimeType}';
+  }
 
   ExtendedResponse<T> toExtendedResponse<T>() => ExtendedResponse<T>(
       requestOptions: requestOptions,

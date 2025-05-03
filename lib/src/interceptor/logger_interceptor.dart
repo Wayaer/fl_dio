@@ -1,6 +1,5 @@
 import 'dart:convert';
-import 'package:dio/dio.dart';
-import 'package:fl_dio/src/extended/log.dart';
+import 'package:fl_dio/fl_dio.dart';
 
 class LoggerInterceptor extends InterceptorsWrapper {
   LoggerInterceptor({
@@ -8,9 +7,11 @@ class LoggerInterceptor extends InterceptorsWrapper {
     this.hideRequest = const [],
     this.hideResponse = const [],
     this.printResponseHeader = false,
-    this.requestQueryParametersToJson = false,
-    this.requestDataToJson = false,
-    this.responseDataToJson = false,
+    this.printErrorResponse = false,
+    this.requestQueryParametersToJson = true,
+    this.requestDataToJson = true,
+    this.requestHeaderToJson = true,
+    this.responseToJson = true,
     this.isPrintBytes = false,
   });
 
@@ -28,6 +29,10 @@ class LoggerInterceptor extends InterceptorsWrapper {
   /// 是否打印 response header
   final bool printResponseHeader;
 
+  /// 打印错误信息
+  /// 当请求失败时，打印错误信息
+  final bool printErrorResponse;
+
   /// 请求参数转 json
   /// 参数必须为 [Map] 才会转
   final bool requestQueryParametersToJson;
@@ -36,9 +41,13 @@ class LoggerInterceptor extends InterceptorsWrapper {
   /// 参数必须为 [Map] 才会转
   final bool requestDataToJson;
 
+  /// map 转 json
+  /// 参数必须为 [Map] 才会转
+  final bool requestHeaderToJson;
+
   /// 返回数据转 json
   /// 返回数据必须为 [Map] 才会转
-  final bool responseDataToJson;
+  final bool responseToJson;
 
   /// 是否打印 bytes
   final bool isPrintBytes;
@@ -52,10 +61,10 @@ class LoggerInterceptor extends InterceptorsWrapper {
 
       dioLog(
           '┌--------------------------------------------------------------------');
-      dioLog('''| [DIO] Request: ${options.method} $uri
-| [DIO] QueryParameters:${convertData(options.queryParameters, isPrint: isPrint, toJson: requestQueryParametersToJson)}
-| [DIO] Data:${convertData(options.data, isPrint: isPrint, toJson: requestDataToJson, responseType: options.responseType)}
-| [DIO] Headers:${options.headers}''');
+      dioLog('''| [DIO | onRequest] Request: ${options.method} $uri
+| [DIO | onRequest] QueryParameters:${convertData(options.queryParameters, isPrint: isPrint, toJson: requestQueryParametersToJson)}
+| [DIO | onRequest] Data:${convertData(options.data, isPrint: isPrint, toJson: requestDataToJson, responseType: options.responseType)}
+| [DIO | onRequest] Headers:${convertData(options.headers, isPrint: isPrint, toJson: requestHeaderToJson)}''');
       dioLog(
           '├--------------------------------------------------------------------');
     }
@@ -68,9 +77,7 @@ class LoggerInterceptor extends InterceptorsWrapper {
     bool toJson = false,
     ResponseType? responseType,
   }) {
-    if (!isPrint) {
-      return ' [Hidden] ';
-    }
+    if (!isPrint) return ' [${data.runtimeType} Hidden] ';
     if (data is Map && toJson) {
       try {
         return jsonEncode(data);
@@ -93,9 +100,9 @@ class LoggerInterceptor extends InterceptorsWrapper {
     if (isPrint) {
       final isPrint = hideResponse.where((e) => requestUri.contains(e)).isEmpty;
       dioLog(
-          '''| [DIO] Response [statusCode : ${response.statusCode}] [statusMessage : ${response.statusMessage}]
-| [DIO] Request uri: ${response.requestOptions.method} $requestUri ${printResponseHeader ? '\n| [DIO] Response headers: ${response.headers.map}' : ''}
-| [DIO] Response data: ${convertData(response.data, isPrint: isPrint, toJson: responseDataToJson, responseType: response.requestOptions.responseType)}''');
+          '''| [DIO | onResponse] Response [statusCode : ${response.statusCode}] [statusMessage : ${response.statusMessage}]
+| [DIO | onResponse] Request uri: ${response.requestOptions.method} $requestUri ${printResponseHeader ? '\n| [DIO | onResponse] Response headers: ${convertData(response.headers.map, toJson: requestHeaderToJson)}' : ''}
+| [DIO | onResponse] Response data: ${convertData(response.data, isPrint: isPrint, toJson: responseToJson, responseType: response.requestOptions.responseType)}''');
       dioLog(
           '└--------------------------------------------------------------------');
     }
@@ -106,17 +113,14 @@ class LoggerInterceptor extends InterceptorsWrapper {
   void onError(DioException err, ErrorInterceptorHandler handler) {
     String requestUri = err.requestOptions.uri.toString();
     final isPrint = filtered.where((e) => requestUri.contains(e)).isEmpty;
-    if (isPrint) {
-      dioLog(
-          '''| [DIO] Response [statusCode : ${err.response?.statusCode}] [statusMessage : ${err.response?.statusMessage}]
-| [DIO] Request uri: ${err.requestOptions.method} $requestUri ${printResponseHeader ? '\n| [DIO] Response headers: ${err.response?.headers.map}' : ''}
-| [DIO] Error: ${err.error}
-| [DIO] Message: ${err.message}
-| [DIO] Type: ${err.type}
-| [DIO] Response: ${err.response}''');
-      dioLog(
-          '└------------------------------------------------------------------------------');
-    }
+    dioLog(
+        '''| [DIO | error] Response [statusCode : ${err.response?.statusCode}] [statusMessage : ${err.response?.statusMessage}]
+| [DIO | onError] Request uri: ${err.requestOptions.method} $requestUri ${printResponseHeader ? '\n| [DIO | onError] Response headers: ${convertData(err.response?.headers.map, toJson: requestHeaderToJson, isPrint: true)}' : ''}
+| [DIO | onError] Error: ${err.error}
+| [DIO | onError] Message: ${err.message}
+| [DIO | onError] Type: ${err.type} ${printErrorResponse ? '\n| [DIO | onError] Response: ${convertData(err.response?.toMap(), toJson: responseToJson, responseType: err.response?.requestOptions.responseType, isPrint: isPrint)}' : ''}''');
+    dioLog(
+        '└------------------------------------------------------------------------------');
     super.onError(err, handler);
   }
 }

@@ -1,3 +1,8 @@
+## 1.5.1
+
+* Fix the display issue of `LoggerInterceptor` for bytes and streams
+* Fix the issue of excessively long text display in `JsonParse`
+
 ## 1.5.0
 
 * Add `UniversalHttpClientAdapter`,Create different adapters on web and native, and support

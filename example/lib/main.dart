@@ -28,10 +28,7 @@ final interceptors = [
   }),
 
   /// 日志打印
-  LoggerInterceptor(
-      requestDataToJson: true,
-      responseDataToJson: true,
-      requestQueryParametersToJson: true),
+  LoggerInterceptor(),
 
   /// debug 调试工具
   DebuggerInterceptor(),

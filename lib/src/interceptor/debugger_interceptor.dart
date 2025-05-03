@@ -122,7 +122,7 @@ class DebuggerInterceptorHelper {
           context: navigatorKey!.currentContext!,
           isScrollControlled: true,
           useSafeArea: true,
-          builder: (_) => const _DebuggerList());
+          builder: (_) => SafeArea(child: const _DebuggerList()));
     }
   }
 
@@ -170,7 +170,7 @@ class _DebuggerList extends StatelessWidget {
             isScrollControlled: true,
             useSafeArea: true,
             context: navigatorKey.currentContext!,
-            builder: (_) => _DebuggerDetail(key, value));
+            builder: (_) => SafeArea(child: _DebuggerDetail(key, value)));
       }
     });
   }
