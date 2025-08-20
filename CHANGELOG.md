@@ -1,3 +1,7 @@
+## 1.5.2
+
+* Update dio to 5.9.0
+
 ## 1.5.1
 
 * Fix the display issue of `LoggerInterceptor` for bytes and streams

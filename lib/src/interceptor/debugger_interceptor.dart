@@ -307,6 +307,7 @@ class _HttpCard extends StatelessWidget {
                       width: double.infinity,
                       child: Text(model.requestOptions?.path ?? 'unknown',
                           style: textTheme.bodyMedium,
+                          maxLines: 4,
                           textAlign: TextAlign.left)),
                   const SizedBox(height: 4),
                   Row(
