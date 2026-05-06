@@ -13,8 +13,7 @@ class _ValueNotifiers<T> extends ValueNotifier<T> {
 }
 
 class DebuggerInterceptorDataModel {
-  DebuggerInterceptorDataModel(
-      {this.requestOptions, this.response, this.error});
+  DebuggerInterceptorDataModel({this.requestOptions, this.response, this.error});
 
   RequestOptions? requestOptions;
 
@@ -34,16 +33,12 @@ class DebuggerInterceptorDataModel {
         'error': errorToMap(),
       };
 
-  Map<String, dynamic> requestOptionsToMap() => {
-        ...requestOptions?.toMap() ?? {},
-        'requestTime': requestTime?.toString()
-      };
+  Map<String, dynamic> requestOptionsToMap() =>
+      {...requestOptions?.toMap() ?? {}, 'requestTime': requestTime?.toString()};
 
-  Map<String, dynamic> responseToMap() =>
-      {...response?.toMap() ?? {}, 'responseTime': responseTime?.toString()};
+  Map<String, dynamic> responseToMap() => {...response?.toMap() ?? {}, 'responseTime': responseTime?.toString()};
 
-  Map<String, dynamic> errorToMap() =>
-      {...error?.toMap() ?? {}, 'errorTime': errorTime?.toString()};
+  Map<String, dynamic> errorToMap() => {...error?.toMap() ?? {}, 'errorTime': errorTime?.toString()};
 }
 
 class DebuggerInterceptor extends InterceptorsWrapper {
@@ -60,16 +55,9 @@ class DebuggerInterceptor extends InterceptorsWrapper {
   }
 
   @override
-  void onResponse(
-      Response<dynamic> response, ResponseInterceptorHandler handler) {
-    DebuggerInterceptorHelper()
-        ._debugData
-        .value[response.requestOptions.hashCode]
-        ?.response = response;
-    DebuggerInterceptorHelper()
-        ._debugData
-        .value[response.requestOptions.hashCode]
-        ?.responseTime = DateTime.now();
+  void onResponse(Response<dynamic> response, ResponseInterceptorHandler handler) {
+    DebuggerInterceptorHelper()._debugData.value[response.requestOptions.hashCode]?.response = response;
+    DebuggerInterceptorHelper()._debugData.value[response.requestOptions.hashCode]?.responseTime = DateTime.now();
     DebuggerInterceptorHelper()._debugData.notify();
     DebuggerInterceptorHelper().show();
     super.onResponse(response, handler);
@@ -77,14 +65,8 @@ class DebuggerInterceptor extends InterceptorsWrapper {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    DebuggerInterceptorHelper()
-        ._debugData
-        .value[err.requestOptions.hashCode]
-        ?.error = err;
-    DebuggerInterceptorHelper()
-        ._debugData
-        .value[err.requestOptions.hashCode]
-        ?.errorTime = DateTime.now();
+    DebuggerInterceptorHelper()._debugData.value[err.requestOptions.hashCode]?.error = err;
+    DebuggerInterceptorHelper()._debugData.value[err.requestOptions.hashCode]?.errorTime = DateTime.now();
     DebuggerInterceptorHelper()._debugData.notify();
     DebuggerInterceptorHelper().show();
     super.onError(err, handler);
@@ -92,23 +74,22 @@ class DebuggerInterceptor extends InterceptorsWrapper {
 }
 
 class DebuggerInterceptorHelper {
-  factory DebuggerInterceptorHelper() =>
-      _singleton ??= DebuggerInterceptorHelper._();
+  factory DebuggerInterceptorHelper() => _instance;
 
   DebuggerInterceptorHelper._();
 
-  static DebuggerInterceptorHelper? _singleton;
+  static final DebuggerInterceptorHelper _instance = DebuggerInterceptorHelper._();
+
+  static DebuggerInterceptorHelper get instance => _instance;
 
   GlobalKey<NavigatorState>? navigatorKey;
 
   OverlayEntry? _overlayEntry;
 
-  final _ValueNotifiers<Map<int, DebuggerInterceptorDataModel>> _debugData =
-      _ValueNotifiers({});
+  final _ValueNotifiers<Map<int, DebuggerInterceptorDataModel>> _debugData = _ValueNotifiers({});
 
   void show() {
-    _overlayEntry ??=
-        _showOverlay(_DebuggerIcon(show: showDebugger, hide: hide));
+    _overlayEntry ??= _showOverlay(_DebuggerIcon(show: showDebugger, hide: hide));
   }
 
   void hide() {
@@ -150,8 +131,7 @@ class _DebuggerList extends StatelessWidget {
             DebuggerInterceptorHelper()._debugData.value = {};
           }),
           Expanded(
-              child: ValueListenableBuilder<
-                      Map<int, DebuggerInterceptorDataModel>>(
+              child: ValueListenableBuilder<Map<int, DebuggerInterceptorDataModel>>(
                   valueListenable: DebuggerInterceptorHelper()._debugData,
                   builder: (_, map, __) => ListView.builder(
                       padding: EdgeInsets.zero,
@@ -209,15 +189,12 @@ class _DebuggerIconState extends State<_DebuggerIcon> {
           child: GestureDetector(
             onTap: show,
             onDoubleTap: widget.hide,
-            onPanStart: (DragStartDetails details) =>
-                update(details.globalPosition),
-            onPanUpdate: (DragUpdateDetails details) =>
-                update(details.globalPosition),
+            onPanStart: (DragStartDetails details) => update(details.globalPosition),
+            onPanUpdate: (DragUpdateDetails details) => update(details.globalPosition),
             child: Container(
                 decoration: BoxDecoration(color: color, shape: BoxShape.circle),
                 padding: const EdgeInsets.all(6),
-                child: const Icon(Icons.bug_report_rounded,
-                    size: 23, color: Colors.white)),
+                child: const Icon(Icons.bug_report_rounded, size: 23, color: Colors.white)),
           ))
     ]);
   }
@@ -255,82 +232,54 @@ class _HttpCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusCode =
-        model.response?.statusCode ?? model.error?.response?.statusCode;
+    final statusCode = model.response?.statusCode ?? model.error?.response?.statusCode;
     final textTheme = Theme.of(context).textTheme;
     return Card(
         child: Padding(
             padding: const EdgeInsets.all(8),
             child: GestureDetector(
                 onLongPress: () {
-                  Clipboard.setData(
-                      ClipboardData(text: model.toMap().toString()));
+                  Clipboard.setData(ClipboardData(text: model.toMap().toString()));
                 },
                 onTap: onTap,
                 child: Column(children: [
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(model.requestOptions?.method ?? 'unknown',
-                            style: (textTheme.bodyLarge ?? const TextStyle())
-                                .copyWith(
-                                    fontSize: 16, fontWeight: FontWeight.bold)),
-                        Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 4, horizontal: 10),
-                            decoration: BoxDecoration(
-                                color: statusCodeColor(statusCode ?? 0),
-                                borderRadius: BorderRadius.circular(4)),
-                            child: Text(statusCode?.toString() ?? 'N/A',
-                                style:
-                                    (textTheme.bodyMedium ?? const TextStyle())
-                                        .copyWith(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w600)))
-                      ]),
+                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Text(model.requestOptions?.method ?? 'unknown',
+                        style: (textTheme.bodyLarge ?? const TextStyle())
+                            .copyWith(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Container(
+                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                        decoration: BoxDecoration(
+                            color: statusCodeColor(statusCode ?? 0), borderRadius: BorderRadius.circular(4)),
+                        child: Text(statusCode?.toString() ?? 'N/A',
+                            style: (textTheme.bodyMedium ?? const TextStyle())
+                                .copyWith(color: Colors.white, fontWeight: FontWeight.w600)))
+                  ]),
                   const SizedBox(height: 2),
                   Row(children: [
                     Visibility(
-                        visible:
-                            model.requestOptions?.baseUrl.contains('https') ??
-                                false,
-                        replacement: const Icon(Icons.lock,
-                            size: 18, color: Colors.green),
-                        child: const Icon(Icons.lock_open,
-                            size: 18, color: Colors.green)),
-                    Expanded(
-                        child: Text(model.requestOptions?.baseUrl ?? 'N/A',
-                            style: textTheme.bodyMedium))
+                        visible: model.requestOptions?.baseUrl.contains('https') ?? false,
+                        replacement: const Icon(Icons.lock, size: 18, color: Colors.green),
+                        child: const Icon(Icons.lock_open, size: 18, color: Colors.green)),
+                    Expanded(child: Text(model.requestOptions?.baseUrl ?? 'N/A', style: textTheme.bodyMedium))
                   ]),
                   const SizedBox(height: 4),
                   SizedBox(
                       width: double.infinity,
                       child: Text(model.requestOptions?.path ?? 'unknown',
-                          style: textTheme.bodyMedium,
-                          maxLines: 4,
-                          textAlign: TextAlign.left)),
+                          style: textTheme.bodyMedium, maxLines: 4, textAlign: TextAlign.left)),
                   const SizedBox(height: 4),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                            flex: 5,
-                            child: Text(requestTime(model.requestTime),
-                                style: textTheme.bodySmall)),
-                        Expanded(
-                            flex: 2,
-                            child: Text(
-                                stringToBytes(
-                                    model.response?.data?.toString() ?? ''),
-                                textAlign: TextAlign.center,
-                                style: textTheme.bodySmall)),
-                        Expanded(
-                            flex: 2,
-                            child: Text(
-                                '${diffMillisecond(model.requestTime, model.responseTime)} ms',
-                                textAlign: TextAlign.end,
-                                style: textTheme.bodySmall)),
-                      ]),
+                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Expanded(flex: 5, child: Text(requestTime(model.requestTime), style: textTheme.bodySmall)),
+                    Expanded(
+                        flex: 2,
+                        child: Text(stringToBytes(model.response?.data?.toString() ?? ''),
+                            textAlign: TextAlign.center, style: textTheme.bodySmall)),
+                    Expanded(
+                        flex: 2,
+                        child: Text('${diffMillisecond(model.requestTime, model.responseTime)} ms',
+                            textAlign: TextAlign.end, style: textTheme.bodySmall)),
+                  ]),
                 ]))));
   }
 
@@ -374,12 +323,10 @@ class _DebuggerDetail extends StatelessWidget {
         child: Material(
             type: MaterialType.card,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+            child: Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
               _Toolbar(onDelete: () {
                 Navigator.of(context).maybePop();
-                final map =
-                    Map.of(DebuggerInterceptorHelper()._debugData.value);
+                final map = Map.of(DebuggerInterceptorHelper()._debugData.value);
                 map.remove(iKey);
                 DebuggerInterceptorHelper()._debugData.value = map;
               }),
@@ -389,8 +336,7 @@ class _DebuggerDetail extends StatelessWidget {
                 SizedBox(
                     height: 38,
                     child: TabBar(
-                        indicatorSize: TabBarIndicatorSize.label,
-                        tabs: tabs.map((item) => Tab(text: item)).toList())),
+                        indicatorSize: TabBarIndicatorSize.label, tabs: tabs.map((item) => Tab(text: item)).toList())),
                 Expanded(
                     child: TabBarView(
                         children: tabs.map((item) {

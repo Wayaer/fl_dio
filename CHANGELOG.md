@@ -1,6 +1,6 @@
-## 1.5.2
+## 1.6.0
 
-* Update dio to 5.9.0
+* Update dio to 5.9.2
 
 ## 1.5.1
 

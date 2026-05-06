@@ -1,18 +1,18 @@
 name: fl_dio
 description: Extended dio and added three interceptors and the JsonParse component.
-version: 1.5.2
+version: 1.6.0
 repository: https://github.com/Wayaer/fl_dio
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
-  flutter: '>=3.24.0'
+  sdk: '>=3.6.0 <4.0.0'
+  flutter: '>=3.27.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  dio: ^5.9.0
+  dio: ^5.9.2
   http_parser: ^4.1.2
-  dio_web_adapter: ^2.1.1
+  dio_web_adapter: ^2.1.2
 
 dev_dependencies:
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
