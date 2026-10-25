@@ -1,12 +1,10 @@
 import 'package:dio/dio.dart';
 
 /// 扩展 header
-typedef ValueCallbackExtraHeader = Map<String, dynamic>? Function(
-    Uri url, Map<String, dynamic> headers);
+typedef ValueCallbackExtraHeader = Map<String, dynamic>? Function(Uri url, Map<String, dynamic> headers);
 
 /// 扩展 params
-typedef ValueCallbackExtraParams = Map<String, dynamic>? Function(
-    Uri uri, Map<String, dynamic> params);
+typedef ValueCallbackExtraParams = Map<String, dynamic>? Function(Uri uri, Map<String, dynamic> params);
 
 /// 扩展 data
 typedef ValueCallbackExtraData = dynamic Function(Uri uri, dynamic data);
@@ -15,12 +13,7 @@ typedef ValueCallbackExtraData = dynamic Function(Uri uri, dynamic data);
 typedef ValueCallbackExtraPath = String? Function(Uri uri);
 
 class ExtraParamsInterceptor extends InterceptorsWrapper {
-  ExtraParamsInterceptor({
-    this.onExtraHeader,
-    this.onExtraData,
-    this.onExtraParams,
-    this.onExtraPath,
-  });
+  ExtraParamsInterceptor({this.onExtraHeader, this.onExtraData, this.onExtraParams, this.onExtraPath});
 
   ///  扩展 header
   ValueCallbackExtraHeader? onExtraHeader;

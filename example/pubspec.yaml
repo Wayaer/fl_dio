@@ -1,19 +1,20 @@
 name: example
-description: A new Flutter project.
+description: FlDio example app by Wayaer - https://github.com/Wayaer/fl_dio
+homepage: https://github.com/Wayaer/fl_dio
 publish_to: 'none'
-version: 1.0.0+1
+version: 2.1.0+1
 
 environment:
-  sdk: '>=3.6.0 <4.0.0'
-  flutter: '>=3.27.0'
+  sdk: '>=3.13.0 <4.0.0'
+  flutter: '>=3.47.0'
 
 dependencies:
   flutter:
     sdk: flutter
   path_provider: ^2.1.5
-  fl_extended: ^3.3.0
   fl_dio:
     path: ../
+  url_launcher: ^6.3.3
 
 dev_dependencies:
   flutter_lints: ^6.0.0

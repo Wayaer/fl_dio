@@ -1,14 +1,14 @@
 import 'package:fl_dio/fl_dio.dart';
 
-import 'dio/dio_for_native.dart'
-    if (dart.library.html) 'dio/dio_for_browser.dart';
+import 'package:fl_dio/src/dio/dio_for_native.dart'
+    if (dart.library.js_interop) 'package:fl_dio/src/dio/dio_for_browser.dart';
 
-abstract class ExtendedDio implements Dio {
-  factory ExtendedDio([BaseOptions? options]) => createDio(options);
+abstract class FlDio implements Dio {
+  factory FlDio([BaseOptions? options]) => createDio(options);
 
   /// Convenience method to make an HTTP HEAD request.  @override
   @override
-  Future<ExtendedResponse<T>> head<T>(
+  Future<FlResponse<T>> head<T>(
     String path, {
     Object? data,
     Map<String, dynamic>? queryParameters,
@@ -18,16 +18,11 @@ abstract class ExtendedDio implements Dio {
 
   /// Convenience method to make an HTTP HEAD request with [Uri].
   @override
-  Future<ExtendedResponse<T>> headUri<T>(
-    Uri uri, {
-    Object? data,
-    Options? options,
-    CancelToken? cancelToken,
-  });
+  Future<FlResponse<T>> headUri<T>(Uri uri, {Object? data, Options? options, CancelToken? cancelToken});
 
   /// Convenience method to make an HTTP GET request.
   @override
-  Future<ExtendedResponse<T>> get<T>(
+  Future<FlResponse<T>> get<T>(
     String path, {
     Object? data,
     Map<String, dynamic>? queryParameters,
@@ -38,7 +33,7 @@ abstract class ExtendedDio implements Dio {
 
   /// Convenience method to make an HTTP GET request with [Uri].
   @override
-  Future<ExtendedResponse<T>> getUri<T>(
+  Future<FlResponse<T>> getUri<T>(
     Uri uri, {
     Object? data,
     Options? options,
@@ -48,7 +43,7 @@ abstract class ExtendedDio implements Dio {
 
   /// Convenience method to make an HTTP POST request.
   @override
-  Future<ExtendedResponse<T>> post<T>(
+  Future<FlResponse<T>> post<T>(
     String path, {
     Object? data,
     Map<String, dynamic>? queryParameters,
@@ -60,7 +55,7 @@ abstract class ExtendedDio implements Dio {
 
   /// Convenience method to make an HTTP POST request with [Uri] .
   @override
-  Future<ExtendedResponse<T>> postUri<T>(
+  Future<FlResponse<T>> postUri<T>(
     Uri uri, {
     Object? data,
     Options? options,
@@ -71,7 +66,7 @@ abstract class ExtendedDio implements Dio {
 
   /// Convenience method to make an HTTP PUT request .
   @override
-  Future<ExtendedResponse<T>> put<T>(
+  Future<FlResponse<T>> put<T>(
     String path, {
     Object? data,
     Map<String, dynamic>? queryParameters,
@@ -83,7 +78,7 @@ abstract class ExtendedDio implements Dio {
 
   /// Convenience method to make an HTTP PUT request with [Uri] .
   @override
-  Future<ExtendedResponse<T>> putUri<T>(
+  Future<FlResponse<T>> putUri<T>(
     Uri uri, {
     Object? data,
     Options? options,
@@ -94,7 +89,7 @@ abstract class ExtendedDio implements Dio {
 
   /// Convenience method to make an HTTP PATCH request .
   @override
-  Future<ExtendedResponse<T>> patch<T>(
+  Future<FlResponse<T>> patch<T>(
     String path, {
     Object? data,
     Map<String, dynamic>? queryParameters,
@@ -106,7 +101,7 @@ abstract class ExtendedDio implements Dio {
 
   /// Convenience method to make an HTTP PATCH request with [Uri] .
   @override
-  Future<ExtendedResponse<T>> patchUri<T>(
+  Future<FlResponse<T>> patchUri<T>(
     Uri uri, {
     Object? data,
     Options? options,
@@ -117,7 +112,7 @@ abstract class ExtendedDio implements Dio {
 
   /// Convenience method to make an HTTP DELETE request .
   @override
-  Future<ExtendedResponse<T>> delete<T>(
+  Future<FlResponse<T>> delete<T>(
     String path, {
     Object? data,
     Map<String, dynamic>? queryParameters,
@@ -127,12 +122,7 @@ abstract class ExtendedDio implements Dio {
 
   /// Convenience method to make an HTTP DELETE request with [Uri] .
   @override
-  Future<ExtendedResponse<T>> deleteUri<T>(
-    Uri uri, {
-    Object? data,
-    Options? options,
-    CancelToken? cancelToken,
-  });
+  Future<FlResponse<T>> deleteUri<T>(Uri uri, {Object? data, Options? options, CancelToken? cancelToken});
 
   /// {@template dio.Dio.download}
   /// Download the file and save it in local. The default http method is "GET",
@@ -191,7 +181,7 @@ abstract class ExtendedDio implements Dio {
   /// ```
   /// {@endtemplate}
   @override
-  Future<ExtendedResponse> download(
+  Future<FlResponse> download(
     String urlPath,
     dynamic savePath, {
     ProgressCallback? onReceiveProgress,
@@ -206,7 +196,7 @@ abstract class ExtendedDio implements Dio {
 
   /// {@macro dio.Dio.download}
   @override
-  Future<ExtendedResponse> downloadUri(
+  Future<FlResponse> downloadUri(
     Uri uri,
     dynamic savePath, {
     ProgressCallback? onReceiveProgress,
@@ -216,19 +206,21 @@ abstract class ExtendedDio implements Dio {
     FileAccessMode fileAccessMode = FileAccessMode.write,
     Object? data,
     Options? options,
-  }) =>
-      download(uri.toString(), savePath,
-          onReceiveProgress: onReceiveProgress,
-          lengthHeader: lengthHeader,
-          fileAccessMode: fileAccessMode,
-          deleteOnError: deleteOnError,
-          cancelToken: cancelToken,
-          data: data,
-          options: options);
+  }) => download(
+    uri.toString(),
+    savePath,
+    onReceiveProgress: onReceiveProgress,
+    lengthHeader: lengthHeader,
+    fileAccessMode: fileAccessMode,
+    deleteOnError: deleteOnError,
+    cancelToken: cancelToken,
+    data: data,
+    options: options,
+  );
 
   /// Make HTTP request with options .
   @override
-  Future<ExtendedResponse<T>> request<T>(
+  Future<FlResponse<T>> request<T>(
     String url, {
     Object? data,
     Map<String, dynamic>? queryParameters,
@@ -240,7 +232,7 @@ abstract class ExtendedDio implements Dio {
 
   /// Make http request with options with [Uri] .
   @override
-  Future<ExtendedResponse<T>> requestUri<T>(
+  Future<FlResponse<T>> requestUri<T>(
     Uri uri, {
     Object? data,
     CancelToken? cancelToken,
@@ -252,5 +244,14 @@ abstract class ExtendedDio implements Dio {
   /// The eventual method to submit requests. All callers for requests should
   /// eventually go through this method .
   @override
-  Future<ExtendedResponse<T>> fetch<T>(RequestOptions requestOptions);
+  Future<FlResponse<T>> fetch<T>(RequestOptions requestOptions);
+
+  /// Returns a clone that is also an [FlDio].
+  @override
+  FlDio clone({
+    BaseOptions? options,
+    Interceptors? interceptors,
+    HttpClientAdapter? httpClientAdapter,
+    Transformer? transformer,
+  });
 }

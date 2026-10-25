@@ -1,7 +1,7 @@
 import 'package:fl_dio/fl_dio.dart';
 
-class ExtendedResponse<T> extends Response<T> {
-  ExtendedResponse({
+class FlResponse<T> extends Response<T> {
+  FlResponse({
     required super.requestOptions,
     super.data,
     super.statusCode,
@@ -12,7 +12,8 @@ class ExtendedResponse<T> extends Response<T> {
     super.isRedirect,
     this.exception,
     this.type,
-  });
+    List<String>? cookie,
+  }) : cookie = cookie ?? <String>[];
 
   /// 请求返回类型 [DioException]
   DioExceptionType? type;
@@ -20,20 +21,34 @@ class ExtendedResponse<T> extends Response<T> {
   /// exception 信息
   Object? exception;
 
-  /// 保存的cookie
-  List<String> cookie = <String>[];
+  /// 响应中的 Set-Cookie
+  List<String> cookie;
 
-  static ExtendedResponse<T> mergeDioException<T>(DioException exception) =>
-      ExtendedResponse(
-          type: exception.type,
-          exception: exception,
-          requestOptions: exception.requestOptions);
+  static FlResponse<T> mergeDioException<T>(DioException exception) {
+    final Response<dynamic>? response = exception.response;
+    T? data;
+    final dynamic responseData = response?.data;
+    if (responseData is T) data = responseData;
+    return FlResponse<T>(
+      requestOptions: exception.requestOptions,
+      type: exception.type,
+      exception: exception,
+      data: data,
+      statusCode: response?.statusCode,
+      statusMessage: response?.statusMessage,
+      headers: response?.headers,
+      redirects: response?.redirects ?? const <RedirectRecord>[],
+      extra: response?.extra ?? <String, dynamic>{},
+      isRedirect: response?.isRedirect ?? false,
+      cookie: response?.headers['set-cookie']?.toList(),
+    );
+  }
 
-  static ExtendedResponse<T> generalExtendedResponse<T>({Object? exception}) =>
-      ExtendedResponse<T>(
-          exception: exception,
-          requestOptions: RequestOptions(path: ''),
-          statusCode: 0,
-          statusMessage: 'unknown exception',
-          type: DioExceptionType.unknown);
+  static FlResponse<T> generalFlResponse<T>({Object? exception}) => FlResponse<T>(
+    exception: exception,
+    requestOptions: RequestOptions(path: ''),
+    statusCode: 0,
+    statusMessage: 'unknown exception',
+    type: DioExceptionType.unknown,
+  );
 }

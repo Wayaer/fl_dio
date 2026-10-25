@@ -1,9 +1,9 @@
 import 'package:dio/browser.dart';
 import 'package:fl_dio/fl_dio.dart';
 
-/// Create the [ExtendedDio] instance for Web platforms.
-ExtendedDio createDio([BaseOptions? options]) => ExtendedDioForBrowser(options);
+/// Create the [FlDio] instance for Web platforms.
+FlDio createDio([BaseOptions? options]) => FlDioForBrowser(options);
 
-class ExtendedDioForBrowser extends DioForBrowser with ExtendedDioMixin {
-  ExtendedDioForBrowser([super.baseOptions]);
+class FlDioForBrowser extends DioForBrowser with FlDioMixin {
+  FlDioForBrowser([super.baseOptions]);
 }

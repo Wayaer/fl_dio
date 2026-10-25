@@ -1,8 +1,7 @@
 import 'package:dio/dio.dart';
 
 /// 请求cookie
-typedef SetCookieOnRequest = Map<String, dynamic> Function(
-    RequestOptions options);
+typedef SetCookieOnRequest = Map<String, dynamic>? Function(RequestOptions options);
 
 /// 获取cookie
 typedef GetCookiesOnResponse = void Function(Response<dynamic> response);
@@ -19,13 +18,12 @@ class CookiesInterceptor extends InterceptorsWrapper {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     final cookies = setCookies?.call(options);
-    if (cookies != null) options.headers.addAll(cookies);
+    if (cookies != null && cookies.isNotEmpty) options.headers.addAll(cookies);
     handler.next(options);
   }
 
   @override
-  void onResponse(
-      Response<dynamic> response, ResponseInterceptorHandler handler) {
+  void onResponse(Response<dynamic> response, ResponseInterceptorHandler handler) {
     getCookies?.call(response);
     super.onResponse(response, handler);
   }

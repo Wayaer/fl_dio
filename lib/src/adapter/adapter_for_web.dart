@@ -17,8 +17,7 @@ HttpClientAdapter createDioAdapter({
 
   /// No practical significance
   ValidateCertificateForNative? validateCertificate,
-}) =>
-    BrowserHttpClientAdapter(withCredentials: withCredentials);
+}) => BrowserHttpClientAdapter(withCredentials: withCredentials);
 
 class HttpClient {}
 

@@ -19,7 +19,4 @@ HttpClientAdapter createDioAdapter({
 
   /// No practical significance
   bool withCredentials = false,
-}) =>
-    IOHttpClientAdapter(
-        createHttpClient: createHttpClient,
-        validateCertificate: validateCertificate);
+}) => IOHttpClientAdapter(createHttpClient: createHttpClient, validateCertificate: validateCertificate);
